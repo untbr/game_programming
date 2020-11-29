@@ -1,0 +1,6 @@
+__pycache__/
+*.un~
+*.swp
+*.gitignore~
+*.py~
+.mypy_cache/

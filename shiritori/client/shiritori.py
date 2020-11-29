@@ -45,9 +45,7 @@ class ShiritoriClient:
         return self.request(self.host + "head_word/")
 
     def shiritori(self, word: str, head_word: str) -> Optional[Dict[Any, Any]]:
-        if self.mode is None:
-            raise ShiritoriClientException("しりとりでつかう品詞の設定ができていません")
-        if head_word is None or not len(head_word) == 1:
+        if head_word is None or len(head_word) != 1:
             raise ShiritoriClientException("一文字の頭文字が設定できていません")
         data = {"text": word, "head_word": head_word}
         url = self.host + str(self.mode) + "?" + urlencode(data, encoding="utf-8")

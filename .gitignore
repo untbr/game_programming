@@ -4,3 +4,4 @@ __pycache__/
 *.gitignore~
 *.py~
 .mypy_cache/
+*.md~

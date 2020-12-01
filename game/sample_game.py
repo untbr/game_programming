@@ -21,7 +21,9 @@ def main():
         word = game_instance.get_word()
         print("{}\n{}".format(word.word, word.describe))
         answer = input("answer: ")
-        game_instance.judge_word(answer)
+        judge = game_instance.judge_word(answer)
+        if not judge.correct:
+            print(judge.message)
     print("終了")
 
 if __name__ == "__main__":

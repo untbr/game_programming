@@ -4,7 +4,7 @@ from random import randrange
 from typing import NamedTuple
 import csv
 
-from shiritori_client.shiritori import ShiritoriClient
+from shiritori_client import ShiritoriClient
 from user import GameInfo, GameType, ReportMode, ShiritoriMode, User
 
 

@@ -23,7 +23,7 @@ def main():
         text_title = font.render("Game Title", True, Color.AQUA.comp)
         # 文字の表示位置を設定
         align = Align(text_title, WIDTH, HEIGHT)  # タイトルの表示位置を操作する準備
-        screen.blit(text_title, [align.align_center(), align.align_middle()])  # 表示
+        screen.blit(text_title, [align.center(), align.middle()])  # 表示
         pygame.display.update()  # ウィンドウ更新(変更結果を表示)
         # イベント処理
         for event in pygame.event.get():

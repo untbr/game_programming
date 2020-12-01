@@ -13,6 +13,7 @@ class Color(Enum):
     RGB値はタプル型(Red, Green, Blue)
     名前はname, 値はvalueで取得可能
     """
+
     WHITE = (255, 255, 255)  # color code: ffffff
     SILVER = (192, 192, 192)  # color code: c0c0c0
     GRAY = (128, 128, 128)  # color code: 808080
@@ -30,18 +31,20 @@ class Color(Enum):
     FUCHSIA = (255, 0, 255)  # color code: ff00ff
     PURPLE = (128, 0, 128)  # color code: 800080
 
-    def color(self) -> tuple:
+    @property
+    def rgb(self) -> tuple:
         """Color(列挙型)のメンバー値を返すメソッド"""
         return self.value
 
+    @property
+    def comp(self) -> tuple:
+        """
+        補色を求めるメソッド
+        引数(元の色)と返り値(補色)はタプル型(Red, Green, Blue)
+        """
+        value = max(self.value) + min(self.value)  # RGB値の最大, 最小の和
+        tmp = list(self.value)  # 計算をするのでリスト型にする
+        for i, clr_value in enumerate(self.value):
+            tmp[i] = value - clr_value  # valueからそれぞれのRGB値を引くことにより補色が求まる
+        return tuple(tmp)  # タプル型にして返す
 
-def comp_color(color: tuple) -> tuple:
-    """
-    補色を求める関数
-    引数(元の色)と返り値(補色)はタプル型(Red, Green, Blue)
-    """
-    value = max(color) + min(color)  # RGB値の最大, 最小の和
-    tmp = list(color)  # 計算をするのでリスト型にする
-    for i, clr_value in enumerate(color):
-        tmp[i] = value - clr_value  # valueからそれぞれのRGB値を引くことにより補色が求まる
-    return tuple(tmp)  # タプル型にして返す

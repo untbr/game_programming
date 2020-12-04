@@ -1,5 +1,6 @@
 import webbrowser
 from typing import List
+from urllib.parse import urlencode
 
 from .game import Score
 
@@ -41,6 +42,6 @@ class User:
     def share(self):
         if not self.scores:
             return ""
-        latest_score = self.scores[-1]
-        url = "https://twitter.com/intent/tweet?text={}".format(self)
+        data = {"text": format(self)}
+        url = "https://twitter.com/intent/tweet?" + urlencode(data)
         webbrowser.open(url)

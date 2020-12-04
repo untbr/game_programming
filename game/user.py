@@ -17,6 +17,8 @@ class User:
 
     def __str__(self):
         """最新のスコアを出力する"""
+        if not self.scores:
+            return ""
         return "ユーザー名: {}\n制限時間内に正解するべき問題数: {}\n正解数: {}\n不正解数: {}".format(
             self.__name,
             self.scores[-1].game_info.mode.number_of_words,

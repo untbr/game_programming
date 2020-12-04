@@ -22,10 +22,9 @@ class ShiritoriClient:
         result = None
         try:
             with urlopen(url) as response:
-                result = json.load(response)
+                return json.load(response)
         except (HTTPError, URLError) as error:
             raise Exception("通信に失敗しました")
-        return result
 
     def get_modes(self) -> Optional[Dict[Any, Any]]:
         """

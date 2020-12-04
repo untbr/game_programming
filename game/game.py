@@ -2,7 +2,7 @@ import csv
 from abc import ABCMeta, abstractmethod
 from enum import Enum
 from random import randrange
-from typing import NamedTuple, List
+from typing import List, NamedTuple
 
 from shiritori_client import ShiritoriClient
 from user import User
@@ -184,10 +184,9 @@ class Report(AGame):
         """
         set_mode時や、不正解時にself.wordsに単語を追加するメソッド
         """
-
         with open("./words.csv", mode="r", encoding="shift_jis") as f:
             reader = csv.reader(f)
-            rows = [row for row in reader]
+            rows = [row for row in reader] # 行をリストに格納していく
             len_rows = len(rows)
             for i in range(number_of_words):
                 line_number = randrange(len_rows)  # 行数分のうちランダムに数値を取る
@@ -195,7 +194,7 @@ class Report(AGame):
                 dict_word = {
                     "question": word[0],
                     "answer": word[1],
-                    "description": word[2].strip(","),
+                    "description": word[2]
                 }
                 self.words.append(dict_word)
 
@@ -203,7 +202,7 @@ class Report(AGame):
         """
         単語を穴あきにするメソッド
         """
-        hole_pos = randrange(len(word))
+        hole_pos = randrange(len(word)) # 0~word長内でランダムな値を生成
         word[hole_pos] = "○"
         return "".join(word)
 
@@ -221,8 +220,8 @@ class Report(AGame):
         ただし、不正解であれば削除したのち、新たに1問分self.wordsに追加する
         (正解時のみself.wordsのlengthが減っていく)
         """
-        q_word = self.words[-1]
-        correct = False
+        q_word = self.words[-1] # 最後の要素を出題していたので、判定元も最後の要素
+        correct = False # 正誤用の変数の初期値をFalseとしておく
         if q_word["answer"] == word:  # 正解
             correct = True
             self.number_of_corrects += 1  # 正解数(解いた数)を更新する

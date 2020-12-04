@@ -1,11 +1,12 @@
 import csv
+import os
 from abc import ABCMeta, abstractmethod
 from enum import Enum
 from random import randrange
 from typing import Dict, List, NamedTuple, Type, Union
 
 from shiritori_client import ShiritoriClient
-from user import User
+# from user import User
 
 
 class Mode(NamedTuple):
@@ -167,6 +168,7 @@ class Report(AGame):
     def __init__(self) -> None:
         super().__init__(ReportType)
         self.words: List[Dict[str, str]] = []  # 出題する問題を格納するリスト
+        self.file_path = os.path.dirname(__file__) + "/words.csv"
 
     def set_mode(self, game_mode: Mode) -> None:
         """
@@ -181,7 +183,7 @@ class Report(AGame):
         """
         set_mode時や、不正解時にself.wordsに単語を追加するメソッド
         """
-        with open("./words.csv", mode="r", encoding="shift_jis") as f:
+        with open(self.file_path, mode="r", encoding="shift_jis") as f:
             reader = csv.reader(f)
             rows = [row for row in reader]  # 行をリストに格納していく
             len_rows = len(rows)

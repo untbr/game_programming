@@ -43,14 +43,13 @@ class GameInfo:
 
     def __init__(self, game_type: Union[Type[ReportType], Type[ShiritoriType]]) -> None:
         self.__type = game_type
-        # self.__mode = None
 
     @property
     def type(self) -> Union[Type[ReportType], Type[ShiritoriType]]:
         return self.__type
 
     @property
-    def mode(self) -> Mode:  # Union[ReportType, ShiritoriType]:
+    def mode(self) -> Mode:
         return self.__mode
 
     @mode.setter
@@ -111,7 +110,7 @@ class AGame(metaclass=ABCMeta):
         """
         raise NotImplementedError()
 
-    def get_mode(self) -> List[Mode]:  # Union[List[ReportType], List[ShiritoriType]]:
+    def get_mode(self) -> List[Mode]:
         """
         ゲームのタイプがセットされた状態のGameInfo(__init__でインスタンス化済み)を返す
         """

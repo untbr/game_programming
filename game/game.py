@@ -12,6 +12,7 @@ class JudgeResponse(NamedTuple):
     """
     正誤判定した際に使う名前付きタプル
     """
+
     correct: bool  # 正誤判定結果
     message: str  # # レポートゲームであれば正しい答え、しりとりならサーバ側からの判定メッセージ
 
@@ -65,13 +66,13 @@ class AGame(metaclass=ABCMeta):
         ゲームのタイプがセットされた状態のGameInfo(__init__でインスタンス化済み)を返す
         """
         # UI側で、get_mode().type.value.game_modeでそのタイプのモードがわかる
-        return self.game_info
+        return [i.value for i in self.game_info.type.value.game_mode]
 
     def is_finish(self) -> bool:
         """
         self.number_of_correctが、そのモードの解くべき問題数に達するとTrueを返しそれ以外でFalseを返す
         """
-        return self.game_info.mode.value.number_of_words == self.number_of_corrects
+        return self.game_info.mode.number_of_words == self.number_of_corrects
 
 
 class Shiritori(AGame):
@@ -82,7 +83,7 @@ class Shiritori(AGame):
 
     def set_mode(self, game_mode: Enum) -> None:
         self.game_info.mode = game_mode
-        self.client.set_mode(game_mode.value.id)
+        self.client.set_mode(game_mode.id)
 
     def get_word(self) -> QuestionResponse:
         # ゲーム開始時は頭文字が設定されてないので、
@@ -91,7 +92,7 @@ class Shiritori(AGame):
             self.head_word = self.client.get_head_word()["next_head"]
         # 上でhead_wordがNoneでないことが保証される
         description = "「{}」で始まる{}を入力してください".format(
-            self.head_word, self.game_info.mode.value.value
+            self.head_word, self.game_info.mode.value
         )
         # QuestionResponseを頭文字とdescriptionでタプルを生成して返す
         return QuestionResponse(self.head_word, description)
@@ -126,7 +127,7 @@ class Report(AGame):
         それを使ってファイルから問題数分の単語を拾ってself.wordsに格納する
         """
         self.game_info.mode = game_mode
-        number_of_words = game_mode.value.number_of_words  # 解くべき語数
+        number_of_words = game_mode.number_of_words  # 解くべき語数
         self.add_words(number_of_words)  # self.wordsに単語追加するメソッドを呼ぶ
 
     def add_words(self, number_of_words):
@@ -138,9 +139,9 @@ class Report(AGame):
             reader = csv.reader(f)
             rows = [row for row in reader]
             len_rows = len(rows)
- 
+
             for i in range(number_of_words):
-                line_number = randrange(len_rows) # 行数分のうちランダムに数値を取る
+                line_number = randrange(len_rows)  # 行数分のうちランダムに数値を取る
                 word = rows[line_number]
                 dict_word = {
                     "question": word[0],

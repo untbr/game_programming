@@ -6,8 +6,9 @@ from urllib.request import urlopen
 
 
 class ShiritoriClient:
-    #host = "http://127.0.0.1:8000"
+    # host = "http://127.0.0.1:8000"
     host = "https://game-pbl-shiritori.df.r.appspot.com"
+
     def __init__(self) -> None:
         self.mode = 0
         self.host = ShiritoriClient.host + "/shiritori/"

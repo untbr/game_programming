@@ -1,6 +1,5 @@
-# -*- coding: utf-8 -*-
-
 from game import Report, Shiritori
+
 
 def main():
     game_instance = None
@@ -12,11 +11,10 @@ def main():
     else:
         return
     game_mode = game_instance.get_mode()
-    mode = [i for i in game_mode.type.value.game_mode]
-    for i in mode:
-        print("{}:{}".format(i.value.value, i.value.id))
+    for i in game_mode:
+        print("{}:{}".format(i.value, i.id))
     idx = input("モードを入力してください: ")
-    game_instance.set_mode(mode[int(idx)])
+    game_instance.set_mode(game_mode[int(idx)])
     while not game_instance.is_finish():
         word = game_instance.get_word()
         print("{}\n{}".format(word.word, word.describe))
@@ -25,6 +23,7 @@ def main():
         if not judge.correct:
             print(judge.message)
     print("終了")
+
 
 if __name__ == "__main__":
     main()

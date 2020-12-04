@@ -9,10 +9,12 @@ from typing import Generic, List, TypeVar, NamedTuple
 4, Userインスタンス.scores[-1]から最新のスコアを参照できる(Userインスタンス.scores[-1].clear_timeなど)
 """
 
+
 class ModeTuple(NamedTuple):
-    id: int # ユニークキー
-    value: str # 日本語での値
-    number_of_words: int # 制限時間内に解くべき語数(不正解はカウントしない実装をする)
+    id: int  # ユニークキー
+    value: str  # 日本語での値
+    number_of_words: int  # 制限時間内に解くべき語数(不正解はカウントしない実装をする)
+
 
 class ReportMode(Enum):
     EASY = ModeTuple(0, "かんたん", 3)
@@ -25,6 +27,7 @@ class ShiritoriMode(Enum):
     プレイできる品詞はAPIで取得できるようにしているが、
     こっち側のいい実装が思い浮かばないのでとりあえず決め打ち
     """
+
     NOUN = ModeTuple(0, "名詞", 3)
     VERB = ModeTuple(1, "動詞", 2)
     ADJECTIVE = ModeTuple(2, "形容詞", 3)
@@ -44,13 +47,9 @@ class GameType(Enum):
 class GameInfo:
     """
     ゲームの情報に関するクラス
-    モードに関する定義は
-    レポートでは難易度(ReportMode)、しりとりでは品詞の種類(ShiritoriMode)なので変数とした
     """
 
-    T = TypeVar("T", ReportMode, ShiritoriMode)
-
-    def __init__(self, game_type: GameType, mode: Generic[T]) -> None:
+    def __init__(self, game_type: GameType, mode: ModeTuple) -> None:
         self.__type = game_type
         self.__mode = mode
 
@@ -65,6 +64,7 @@ class GameInfo:
     @mode.setter
     def mode(self, mode) -> None:
         self.__mode = mode
+
 
 class Score:
     """

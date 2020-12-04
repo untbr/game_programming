@@ -1,3 +1,4 @@
+import webbrowser
 from typing import List
 
 from .game import Score
@@ -19,11 +20,12 @@ class User:
         """最新のスコアを出力する"""
         if not self.scores:
             return ""
+        latest_score = self.scores[-1]
         return "ユーザー名: {}\n制限時間内に正解するべき問題数: {}\n正解数: {}\n不正解数: {}".format(
             self.__name,
-            self.scores[-1].game_info.mode.number_of_words,
-            self.scores[-1].number_of_corrects,
-            self.scores[-1].number_of_incorrects,
+            latest_score.game_info.mode.number_of_words,
+            latest_score.number_of_corrects,
+            latest_score.number_of_incorrects,
         )
 
     def name(self) -> str:
@@ -35,3 +37,10 @@ class User:
 
     def add_score(self, score: Score) -> None:
         self.__scores.append(score)
+
+    def share(self):
+        if not self.scores:
+            return ""
+        latest_score = self.scores[-1]
+        url = "https://twitter.com/intent/tweet?text={}".format(self)
+        webbrowser.open(url)

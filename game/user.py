@@ -10,62 +10,6 @@ from typing import Generic, List, NamedTuple, TypeVar, Optional
 """
 
 
-class ModeTuple(NamedTuple):
-    id: int  # ユニークキー
-    value: str  # 日本語での値
-    number_of_words: int  # 制限時間内に解くべき語数(不正解はカウントしない実装をする)
-
-
-class ReportMode(Enum):
-    EASY = ModeTuple(0, "かんたん", 3)
-    NORMAL = ModeTuple(1, "ふつう", 5)
-    DIFFICULT = ModeTuple(2, "むずかしい", 10)
-
-
-class ShiritoriMode(Enum):
-    """
-    プレイできる品詞はAPIで取得できるようにしているが、
-    こっち側のいい実装が思い浮かばないのでとりあえず決め打ち
-    """
-
-    NOUN = ModeTuple(0, "名詞", 3)
-    VERB = ModeTuple(1, "動詞", 2)
-    ADJECTIVE = ModeTuple(2, "形容詞", 3)
-
-
-class TypeMode(NamedTuple):
-    T = TypeVar("T", ReportMode, ShiritoriMode)
-    game_type: int
-    game_mode: T
-
-
-class GameType(Enum):
-    REPORT = TypeMode(0, ReportMode)  # レポートゲーム
-    SHIRITORI = TypeMode(1, ShiritoriMode)  # しりとりゲーム
-
-
-class GameInfo:
-    """
-    ゲームの情報に関するクラス
-    """
-
-    def __init__(self, game_type: GameType, mode: ModeTuple) -> None:
-        self.__type = game_type
-        self.__mode = mode
-
-    @property
-    def type(self) -> GameType:
-        return self.__type
-
-    @property
-    def mode(self) -> ModeTuple:
-        return self.__mode
-
-    @mode.setter
-    def mode(self, mode) -> None:
-        self.__mode = mode
-
-
 class Score:
     """
     ゲームクリア時のスコアに関するクラス

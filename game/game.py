@@ -5,7 +5,57 @@ from random import randrange
 from typing import NamedTuple, List
 
 from shiritori_client import ShiritoriClient
-from user import GameInfo, GameType, ReportMode, ShiritoriMode, User
+from user import User
+
+
+class Mode(NamedTuple):
+    """ゲームの難易度(品詞)を格納する名前付きタプル"""
+
+    id: int  # ユニークキー
+    value: str  # 日本語での値
+    number_of_words: int  # 制限時間内に解くべき語数(不正解はカウントしない実装をする)
+
+
+class ReportMode(Enum):
+    """レポートゲームの難易度の列挙体"""
+
+    EASY = Mode(0, "かんたん", 3)
+    NORMAL = Mode(1, "ふつう", 5)
+    DIFFICULT = Mode(2, "むずかしい", 10)
+
+
+class ShiritoriMode(Enum):
+    """
+    しりとりゲームの品詞の列挙体
+    プレイできる品詞はAPIで取得できるようにしているが、
+    こっち側のいい実装が思い浮かばないのでとりあえず決め打ち
+    """
+
+    NOUN = Mode(0, "名詞", 3)
+    VERB = Mode(1, "動詞", 2)
+    ADJECTIVE = Mode(2, "形容詞", 3)
+
+
+class GameInfo:
+    """
+    ゲームの情報に関するクラス
+    """
+
+    def __init__(self, game_type: Enum, mode: Mode) -> None:
+        self.__type = game_type
+        self.__mode = mode
+
+    @property
+    def type(self) -> Enum:
+        return self.__type
+
+    @property
+    def mode(self) -> Mode:
+        return self.__mode
+
+    @mode.setter
+    def mode(self, mode) -> None:
+        self.__mode = mode
 
 
 class JudgeResponse(NamedTuple):
@@ -37,7 +87,7 @@ class AGame(metaclass=ABCMeta):
     is_finishがTrueの場合(もしくは制限時間が0になれば)リザルト画面に遷移させる
     """
 
-    def __init__(self, game_type: GameType):
+    def __init__(self, game_type: Enum):
         # 継承先のインスタンスが生成されれば、ゲームのタイプが決まるので、
         # 先にGameInfoに対してゲームのタイプのみでインスタンス化
         self.game_info = GameInfo(game_type, None)
@@ -61,12 +111,12 @@ class AGame(metaclass=ABCMeta):
         """
         raise NotImplementedError()
 
-    def get_mode(self) -> List[ModeTuple]:
+    def get_mode(self) -> List[Mode]:
         """
         ゲームのタイプがセットされた状態のGameInfo(__init__でインスタンス化済み)を返す
         """
         # UI側で、get_mode().type.value.game_modeでそのタイプのモードがわかる
-        return [i.value for i in self.game_info.type.value.game_mode]
+        return [i.value for i in self.game_info.type]
 
     def is_finish(self) -> bool:
         """
@@ -77,7 +127,7 @@ class AGame(metaclass=ABCMeta):
 
 class Shiritori(AGame):
     def __init__(self) -> None:
-        super().__init__(GameType.SHIRITORI)
+        super().__init__(ShiritoriMode)
         self.client = ShiritoriClient()
         self.head_word = None  # 頭文字に使う変数
 
@@ -118,7 +168,7 @@ class Shiritori(AGame):
 
 class Report(AGame):
     def __init__(self) -> None:
-        super().__init__(GameType.REPORT)
+        super().__init__(ReportMode)
         self.words = []  # LIFO
 
     def set_mode(self, game_mode: Enum) -> None:

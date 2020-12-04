@@ -12,7 +12,7 @@ class ShiritoriClient:
     def __init__(self) -> None:
         self.mode = 0
         self.host = ShiritoriClient.host + "/shiritori/"
-        self.modes = self.request(self.host + "modes/")
+        self.modes = None # self.request(self.host + "modes/")
 
     def request(self, url: str) -> Optional[Dict[Any, Any]]:
         """
@@ -24,7 +24,7 @@ class ShiritoriClient:
             with urlopen(url) as response:
                 result = json.load(response)
         except (HTTPError, URLError) as error:
-            pass
+            raise Exception("通信に失敗しました")
         return result
 
     def get_modes(self) -> Optional[Dict[Any, Any]]:

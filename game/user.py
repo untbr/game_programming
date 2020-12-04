@@ -58,7 +58,7 @@ class GameInfo:
         return self.__type
 
     @property
-    def mode(self) -> Generic[T]:
+    def mode(self) -> ModeTuple:
         return self.__mode
 
     @mode.setter

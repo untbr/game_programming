@@ -24,7 +24,6 @@ def main():
         if not judge.correct:  # 不正解時
             print(judge.message)
     user.add_score(game.score)  # ユーザーの情報にスコアを追加
-    latest_score = user.scores[-1]  # 最新のスコアを変数に格納
     print("終了")
     print(user)
 

@@ -2,7 +2,7 @@ import csv
 from abc import ABCMeta, abstractmethod
 from enum import Enum
 from random import randrange
-from typing import List, NamedTuple
+from typing import Dict, List, NamedTuple, Type, Union
 
 from shiritori_client import ShiritoriClient
 from user import User
@@ -16,7 +16,7 @@ class Mode(NamedTuple):
     number_of_words: int  # 制限時間内に解くべき語数(不正解はカウントしない実装をする)
 
 
-class ReportMode(Enum):
+class ReportType(Enum):
     """レポートゲームの難易度の列挙体"""
 
     EASY = Mode(0, "かんたん", 3)
@@ -24,7 +24,7 @@ class ReportMode(Enum):
     DIFFICULT = Mode(2, "むずかしい", 10)
 
 
-class ShiritoriMode(Enum):
+class ShiritoriType(Enum):
     """
     しりとりゲームの品詞の列挙体
     プレイできる品詞はAPIで取得できるようにしているが、
@@ -41,20 +41,20 @@ class GameInfo:
     ゲームの情報に関するクラス
     """
 
-    def __init__(self, game_type: Enum, mode: Mode) -> None:
+    def __init__(self, game_type: Union[Type[ReportType], Type[ShiritoriType]]) -> None:
         self.__type = game_type
-        self.__mode = mode
+        # self.__mode = None
 
     @property
-    def type(self) -> Enum:
+    def type(self) -> Union[Type[ReportType], Type[ShiritoriType]]:
         return self.__type
 
     @property
-    def mode(self) -> Mode:
+    def mode(self) -> Mode:  # Union[ReportType, ShiritoriType]:
         return self.__mode
 
     @mode.setter
-    def mode(self, mode) -> None:
+    def mode(self, mode: Mode) -> None:
         self.__mode = mode
 
 
@@ -87,14 +87,14 @@ class AGame(metaclass=ABCMeta):
     is_finishがTrueの場合(もしくは制限時間が0になれば)リザルト画面に遷移させる
     """
 
-    def __init__(self, game_type: Enum):
+    def __init__(self, game_type: Union[Type[ReportType], Type[ShiritoriType]]):
         # 継承先のインスタンスが生成されれば、ゲームのタイプが決まるので、
         # 先にGameInfoに対してゲームのタイプのみでインスタンス化
-        self.game_info = GameInfo(game_type, None)
+        self.game_info = GameInfo(game_type)
         self.number_of_corrects = 0
 
     @abstractmethod
-    def set_mode(self, game_mode: Enum) -> None:
+    def set_mode(self, game_mode: Mode) -> None:
         raise NotImplementedError()
 
     @abstractmethod
@@ -111,7 +111,7 @@ class AGame(metaclass=ABCMeta):
         """
         raise NotImplementedError()
 
-    def get_mode(self) -> List[Mode]:
+    def get_mode(self) -> List[Mode]:  # Union[List[ReportType], List[ShiritoriType]]:
         """
         ゲームのタイプがセットされた状態のGameInfo(__init__でインスタンス化済み)を返す
         """
@@ -126,18 +126,18 @@ class AGame(metaclass=ABCMeta):
 
 class Shiritori(AGame):
     def __init__(self) -> None:
-        super().__init__(ShiritoriMode)
+        super().__init__(ShiritoriType)
         self.client = ShiritoriClient()
-        self.head_word = None  # 頭文字に使う変数
+        self.head_word = ""  # 頭文字に使う変数
 
-    def set_mode(self, game_mode: Enum) -> None:
+    def set_mode(self, game_mode: Mode) -> None:
         self.game_info.mode = game_mode
         self.client.set_mode(game_mode.id)
 
     def get_word(self) -> QuestionResponse:
         # ゲーム開始時は頭文字が設定されてないので、
         # クライアントを通して取得する
-        if self.head_word is None:
+        if not self.head_word:
             self.head_word = self.client.get_head_word()["next_head"]
         # 上でhead_wordがNoneでないことが保証される
         description = "「{}」で始まる{}を入力してください".format(
@@ -166,10 +166,10 @@ class Shiritori(AGame):
 
 class Report(AGame):
     def __init__(self) -> None:
-        super().__init__(ReportMode)
-        self.words = []  # LIFO
+        super().__init__(ReportType)
+        self.words: List[Dict[str, str]] = []  # 出題する問題を格納するリスト
 
-    def set_mode(self, game_mode: Enum) -> None:
+    def set_mode(self, game_mode: Mode) -> None:
         """
         モードをセットすれば解くべき問題数がわかるので、
         それを使ってファイルから問題数分の単語を拾ってself.wordsに格納する
@@ -178,7 +178,7 @@ class Report(AGame):
         number_of_words = game_mode.number_of_words  # 解くべき語数
         self.add_words(number_of_words)  # self.wordsに単語追加するメソッドを呼ぶ
 
-    def add_words(self, number_of_words):
+    def add_words(self, number_of_words: int) -> None:
         """
         set_mode時や、不正解時にself.wordsに単語を追加するメソッド
         """
@@ -196,7 +196,7 @@ class Report(AGame):
                 }
                 self.words.append(dict_word)
 
-    def hole(self, word: list) -> str:
+    def hole(self, word: List[str]) -> str:
         """
         単語を穴あきにするメソッド
         """

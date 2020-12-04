@@ -1,4 +1,5 @@
 from game.game import Report, Shiritori
+from game.user import User
 
 
 def main():
@@ -22,11 +23,17 @@ def main():
         judge = game.judge_word(answer)  # 正誤判定
         if not judge.correct:  # 不正解時
             print(judge.message)
+    user.add_score(game.score)  # ユーザーの情報にスコアを追加
+    latest_score = user.scores[-1]  # 最新のスコアを変数に格納
     print("終了")
-    print("制限時間に正解すべき問題:", game.score.game_info.mode.number_of_words)
-    print("正解数:", game.score.number_of_corrects)
-    print("不正解数:", game.score.number_of_incorrects)
+    print("ユーザー名:", user.name)
+    print("制限時間に正解すべき問題:", latest_score.game_info.mode.number_of_words)
+    print("正解数:", latest_score.number_of_corrects)
+    print("不正解数:", latest_score.number_of_incorrects)
 
 
 if __name__ == "__main__":
+    # ゲーム起動中Userインスタンスは同じものを使う
+    # クリア次第、UserのscoresにScoreインスタンスを追加していく
+    user = User("test_user")
     main()

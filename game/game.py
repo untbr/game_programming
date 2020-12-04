@@ -81,7 +81,7 @@ class Score:
         return self.__number_of_corrects
 
     @number_of_corrects.setter
-    def number_of_corrects(self, num) -> int:
+    def number_of_corrects(self, num) -> None:
         self.__number_of_corrects = num
 
     @property
@@ -89,7 +89,7 @@ class Score:
         return self.__number_of_incorrects
 
     @number_of_incorrects.setter
-    def number_of_incorrects(self, num) -> int:
+    def number_of_incorrects(self, num) -> None:
         self.__number_of_incorrects = num
 
 

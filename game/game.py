@@ -82,7 +82,7 @@ class AGame(metaclass=ABCMeta):
     レポートゲームとしりとりゲームに継承させる
 
     UI側で
-    ReportもしくはShiritoriのインスタンス化し、set_modeも難易度(品詞)をセット
+    ReportもしくはShiritoriのインスタンス化し、set_modeで難易度(品詞)をセット
     その後、get_word()、judge_word(入力文字)、is_finish()をサイクルする
     is_finishがTrueの場合(もしくは制限時間が0になれば)リザルト画面に遷移させる
     """
@@ -115,7 +115,6 @@ class AGame(metaclass=ABCMeta):
         """
         ゲームのタイプがセットされた状態のGameInfo(__init__でインスタンス化済み)を返す
         """
-        # UI側で、get_mode().type.value.game_modeでそのタイプのモードがわかる
         return [i.value for i in self.game_info.type]
 
     def is_finish(self) -> bool:
@@ -151,7 +150,6 @@ class Shiritori(AGame):
         """
         判定結果が真ならself.head_wordを設定する
         """
-        # mode_id = self.game_info.mode.value.id
         if self.head_word is None:
             raise Exception("頭文字が設定されていません")
         result = self.client.shiritori(word, self.head_word)
@@ -186,7 +184,7 @@ class Report(AGame):
         """
         with open("./words.csv", mode="r", encoding="shift_jis") as f:
             reader = csv.reader(f)
-            rows = [row for row in reader] # 行をリストに格納していく
+            rows = [row for row in reader]  # 行をリストに格納していく
             len_rows = len(rows)
             for i in range(number_of_words):
                 line_number = randrange(len_rows)  # 行数分のうちランダムに数値を取る
@@ -194,7 +192,7 @@ class Report(AGame):
                 dict_word = {
                     "question": word[0],
                     "answer": word[1],
-                    "description": word[2]
+                    "description": word[2],
                 }
                 self.words.append(dict_word)
 
@@ -202,7 +200,7 @@ class Report(AGame):
         """
         単語を穴あきにするメソッド
         """
-        hole_pos = randrange(len(word)) # 0~word長内でランダムな値を生成
+        hole_pos = randrange(len(word))  # 0~word長内でランダムな値を生成
         word[hole_pos] = "○"
         return "".join(word)
 
@@ -220,8 +218,8 @@ class Report(AGame):
         ただし、不正解であれば削除したのち、新たに1問分self.wordsに追加する
         (正解時のみself.wordsのlengthが減っていく)
         """
-        q_word = self.words[-1] # 最後の要素を出題していたので、判定元も最後の要素
-        correct = False # 正誤用の変数の初期値をFalseとしておく
+        q_word = self.words[-1]  # 最後の要素を出題していたので、判定元も最後の要素
+        correct = False  # 正誤用の変数の初期値をFalseとしておく
         if q_word["answer"] == word:  # 正解
             correct = True
             self.number_of_corrects += 1  # 正解数(解いた数)を更新する

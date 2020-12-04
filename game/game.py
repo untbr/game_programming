@@ -6,7 +6,6 @@ from random import randrange
 from typing import Dict, List, NamedTuple, Type, Union
 
 from .shiritori_client import ShiritoriClient
-# from user import User
 
 
 class Mode(NamedTuple):
@@ -58,6 +57,42 @@ class GameInfo:
         self.__mode = mode
 
 
+class Score:
+    """
+    ゲームクリア時のスコアに関するクラス
+    """
+
+    def __init__(self, game_info: GameInfo):
+        self.__game_info = game_info
+        self.__clear_time = 0
+        self.__number_of_corrects = 0
+        self.__number_of_incorrects = 0
+
+    @property
+    def game_info(self) -> GameInfo:
+        return self.__game_info
+
+    @property
+    def clear_time(self) -> int:
+        return self.__clear_time
+
+    @property
+    def number_of_corrects(self) -> int:
+        return self.__number_of_corrects
+
+    @number_of_corrects.setter
+    def number_of_corrects(self, num) -> int:
+        self.__number_of_corrects = num
+
+    @property
+    def number_of_incorrects(self) -> int:
+        return self.__number_of_incorrects
+
+    @number_of_incorrects.setter
+    def number_of_incorrects(self, num) -> int:
+        self.__number_of_incorrects = num
+
+
 class JudgeResponse(NamedTuple):
     """
     正誤判定した際に使う名前付きタプル
@@ -90,8 +125,9 @@ class AGame(metaclass=ABCMeta):
     def __init__(self, game_type: Union[Type[ReportType], Type[ShiritoriType]]):
         # 継承先のインスタンスが生成されれば、ゲームのタイプが決まるので、
         # 先にGameInfoに対してゲームのタイプのみでインスタンス化
-        self.game_info = GameInfo(game_type)
-        self.number_of_corrects = 0
+        self.game_info = GameInfo(game_type)  # GameInfoクラスのインスタンス化
+        # self.number_of_corrects = 0  # 正解数
+        self.score = Score(self.game_info)  # Scoreクラスのインスタンス化
 
     @abstractmethod
     def set_mode(self, game_mode: Mode) -> None:
@@ -121,7 +157,7 @@ class AGame(metaclass=ABCMeta):
         """
         self.number_of_correctが、そのモードの解くべき問題数に達するとTrueを返しそれ以外でFalseを返す
         """
-        return self.game_info.mode.number_of_words == self.number_of_corrects
+        return self.game_info.mode.number_of_words == self.score.number_of_corrects
 
 
 class Shiritori(AGame):
@@ -156,7 +192,9 @@ class Shiritori(AGame):
         correct = result["is_correct"]  # 正誤の判定結果
         if correct:
             self.head_word = result["next_head"]  # 正解なら次の頭文字を更新する
-            self.number_of_corrects += 1  # 正解数を更新する
+            self.score.number_of_corrects += 1  # 正解数を更新する
+        else:
+            self.score.number_of_incorrects += 1  # 正解数(解いた数)を更新する
         # 正しいときはmessageは空で、間違っているときはメッセージが含まれるように
         # サーバ側で処理している
         message = result["message"]
@@ -223,7 +261,9 @@ class Report(AGame):
         correct = False  # 正誤用の変数の初期値をFalseとしておく
         if q_word["answer"] == word:  # 正解
             correct = True
-            self.number_of_corrects += 1  # 正解数(解いた数)を更新する
+            self.score.number_of_corrects += 1  # 正解数(解いた数)を更新する
+        else:
+            self.score.number_of_incorrects += 1  # 正解数(解いた数)を更新する
         self.words.pop()  # 削除
         message = ""
         if not correct:  # 間違っていたら

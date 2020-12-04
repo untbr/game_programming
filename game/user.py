@@ -10,29 +10,6 @@ from typing import Generic, List, NamedTuple, TypeVar, Optional
 """
 
 
-class Score:
-    """
-    ゲームクリア時のスコアに関するクラス
-    """
-
-    def __init__(self, game_info: GameInfo, time: int, number_of_words: int):
-        self.__game_info = game_info
-        self.__clear_time = time
-        self.__number_of_words = number_of_words
-
-    @property
-    def game_info(self) -> GameInfo:
-        return self.__game_info
-
-    @property
-    def clear_time(self) -> int:
-        return self.__clear_time
-
-    @property
-    def number_of_words(self) -> int:
-        return self.__number_of_words
-
-
 class User:
     """
     プレイするユーザの情報に関するクラス

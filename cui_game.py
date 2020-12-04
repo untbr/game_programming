@@ -26,10 +26,7 @@ def main():
     user.add_score(game.score)  # ユーザーの情報にスコアを追加
     latest_score = user.scores[-1]  # 最新のスコアを変数に格納
     print("終了")
-    print("ユーザー名:", user.name)
-    print("制限時間に正解すべき問題:", latest_score.game_info.mode.number_of_words)
-    print("正解数:", latest_score.number_of_corrects)
-    print("不正解数:", latest_score.number_of_incorrects)
+    print(user)
 
 
 if __name__ == "__main__":

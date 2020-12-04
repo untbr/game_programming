@@ -15,7 +15,15 @@ class User:
         self.__name = name
         self.__scores: List[Score] = []
 
-    @property
+    def __str__(self):
+        """最新のスコアを出力する"""
+        return "ユーザー名: {}\n制限時間内に正解するべき問題数: {}\n正解数: {}\n不正解数: {}".format(
+            self.__name,
+            self.scores[-1].game_info.mode.number_of_words,
+            self.scores[-1].number_of_corrects,
+            self.scores[-1].number_of_incorrects,
+        )
+
     def name(self) -> str:
         return self.__name
 

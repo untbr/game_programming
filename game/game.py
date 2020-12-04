@@ -1,8 +1,8 @@
+import csv
 from abc import ABCMeta, abstractmethod
 from enum import Enum
 from random import randrange
-from typing import NamedTuple
-import csv
+from typing import NamedTuple, List
 
 from shiritori_client import ShiritoriClient
 from user import GameInfo, GameType, ReportMode, ShiritoriMode, User
@@ -37,14 +37,14 @@ class AGame(metaclass=ABCMeta):
     is_finishがTrueの場合(もしくは制限時間が0になれば)リザルト画面に遷移させる
     """
 
-    def __init__(self, game_type):
+    def __init__(self, game_type: GameType):
         # 継承先のインスタンスが生成されれば、ゲームのタイプが決まるので、
         # 先にGameInfoに対してゲームのタイプのみでインスタンス化
         self.game_info = GameInfo(game_type, None)
         self.number_of_corrects = 0
 
     @abstractmethod
-    def set_mode(self, game_mode: Enum):
+    def set_mode(self, game_mode: Enum) -> None:
         raise NotImplementedError()
 
     @abstractmethod
@@ -55,13 +55,13 @@ class AGame(metaclass=ABCMeta):
         raise NotImplementedError()
 
     @abstractmethod
-    def judge_word(self, word: str):
+    def judge_word(self, word: str) -> JudgeResponse:
         """
         入力された単語wordが正しいか判定する
         """
         raise NotImplementedError()
 
-    def get_mode(self):
+    def get_mode(self) -> List[ModeTuple]:
         """
         ゲームのタイプがセットされた状態のGameInfo(__init__でインスタンス化済み)を返す
         """
@@ -139,7 +139,6 @@ class Report(AGame):
             reader = csv.reader(f)
             rows = [row for row in reader]
             len_rows = len(rows)
-
             for i in range(number_of_words):
                 line_number = randrange(len_rows)  # 行数分のうちランダムに数値を取る
                 word = rows[line_number]

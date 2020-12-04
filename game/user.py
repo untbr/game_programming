@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Generic, List, TypeVar, NamedTuple
+from typing import Generic, List, NamedTuple, TypeVar, Optional
 
 """
 ゲーム本体から操作するモジュール

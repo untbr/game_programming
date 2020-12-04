@@ -26,6 +26,9 @@ def main():
     user.add_score(game.score)  # ユーザーの情報にスコアを追加
     print("終了")
     print(user)
+    share = input("ツイッターで結果をシェアしますか？ y/n: ")
+    if share == "y":
+        user.share()
 
 
 if __name__ == "__main__":

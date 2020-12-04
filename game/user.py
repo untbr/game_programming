@@ -40,8 +40,9 @@ class User:
         self.__scores.append(score)
 
     def share(self):
+        """ツイッターで最新のスコアをシェアするためのメソッド"""
         if not self.scores:
             return ""
         data = {"text": format(self)}
         url = "https://twitter.com/intent/tweet?" + urlencode(data)
-        webbrowser.open(url)
+        webbrowser.open(url) # 既定のブラウザで開く

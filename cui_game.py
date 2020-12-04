@@ -1,4 +1,4 @@
-from game import Report, Shiritori
+from game.game import Report, Shiritori
 
 
 def main():

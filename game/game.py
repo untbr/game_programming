@@ -5,7 +5,7 @@ from enum import Enum
 from random import randrange
 from typing import Dict, List, NamedTuple, Type, Union
 
-from shiritori_client import ShiritoriClient
+from .shiritori_client import ShiritoriClient
 # from user import User
 
 

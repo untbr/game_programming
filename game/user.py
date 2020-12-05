@@ -29,6 +29,7 @@ class User:
             latest_score.number_of_incorrects,
         )
 
+    @property
     def name(self) -> str:
         return self.__name
 
@@ -37,6 +38,7 @@ class User:
         return self.__scores
 
     def add_score(self, score: Score) -> None:
+        """スコアを__scoresに追加するメソッド"""
         self.__scores.append(score)
 
     def share(self):
@@ -45,4 +47,4 @@ class User:
             return ""
         data = {"text": format(self)}
         url = "https://twitter.com/intent/tweet?" + urlencode(data)
-        webbrowser.open(url) # 既定のブラウザで開く
+        webbrowser.open(url)  # 既定のブラウザで開く

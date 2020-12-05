@@ -259,14 +259,13 @@ class Report(AGame):
         """
         q_word = self.words[-1]  # 最後の要素を出題していたので、判定元も最後の要素
         correct = False  # 正誤用の変数の初期値をFalseとしておく
-        if q_word["answer"] == word:  # 正解
-            correct = True
-            self.score.number_of_corrects += 1  # 正解数(解いた数)を更新する
-        else:
-            self.score.number_of_incorrects += 1  # 正解数(解いた数)を更新する
         self.words.pop()  # 削除
         message = ""
-        if not correct:  # 間違っていたら
+        if q_word["answer"] == word:  # 正解のとき
+            correct = True
+            self.score.number_of_corrects += 1  # 正解数(解いた数)を更新する
+        else: # 不正解の時
+            self.score.number_of_incorrects += 1  # 正解数(解いた数)を更新する
             self.add_words(1)  # 1単語追加する
             message = "正解は{}です".format(q_word["answer"])
         return JudgeResponse(correct, message)

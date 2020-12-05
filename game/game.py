@@ -126,7 +126,6 @@ class AGame(metaclass=ABCMeta):
         # 継承先のインスタンスが生成されれば、ゲームのタイプが決まるので、
         # 先にGameInfoに対してゲームのタイプのみでインスタンス化
         self.game_info = GameInfo(game_type)  # GameInfoクラスのインスタンス化
-        # self.number_of_corrects = 0  # 正解数
         self.score = Score(self.game_info)  # Scoreクラスのインスタンス化
 
     @abstractmethod
@@ -194,7 +193,7 @@ class Shiritori(AGame):
             self.head_word = result["next_head"]  # 正解なら次の頭文字を更新する
             self.score.number_of_corrects += 1  # 正解数を更新する
         else:
-            self.score.number_of_incorrects += 1  # 正解数(解いた数)を更新する
+            self.score.number_of_incorrects += 1  # 不正解数を更新する
         # 正しいときはmessageは空で、間違っているときはメッセージが含まれるように
         # サーバ側で処理している
         message = result["message"]
@@ -214,8 +213,7 @@ class Report(AGame):
         それを使ってファイルから問題数分の単語を拾ってself.wordsに格納する
         """
         self.game_info.mode = game_mode
-        number_of_words = game_mode.number_of_words  # 解くべき語数
-        self.add_words(number_of_words)  # self.wordsに単語追加するメソッドを呼ぶ
+        self.add_words(game_mode.number_of_words)  # self.wordsに単語追加するメソッドを呼ぶ
 
     def add_words(self, number_of_words: int) -> None:
         """
@@ -263,9 +261,9 @@ class Report(AGame):
         message = ""
         if q_word["answer"] == word:  # 正解のとき
             correct = True
-            self.score.number_of_corrects += 1  # 正解数(解いた数)を更新する
+            self.score.number_of_corrects += 1  # 正解数を更新する
         else: # 不正解の時
-            self.score.number_of_incorrects += 1  # 正解数(解いた数)を更新する
+            self.score.number_of_incorrects += 1  # 不正解数を更新する
             self.add_words(1)  # 1単語追加する
             message = "正解は{}です".format(q_word["answer"])
         return JudgeResponse(correct, message)

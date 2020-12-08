@@ -26,7 +26,7 @@ def main():
         if game.state == States.TYPE:
             game.choose_type()
         if game.state == States.MODE:
-            game.mode(game.type.get_mode())
+            game.mode()
         if game.state == States.PLAY:
             game.play()
         if game.state == States.RESULT:

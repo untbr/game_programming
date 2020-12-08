@@ -28,6 +28,7 @@ class State:
     def __init__(self):
         self.state = None
         self.type = None
+        self.modes = None
 
     def transition(self):
         """現在時の状態とキーの押下に応じて状態を更新するメソッド"""
@@ -49,6 +50,7 @@ class State:
                             self.type = game.Report() # typeをレポートゲームにする
                         else:
                             self.type = game.Shiritori() # typeをしりとりゲームにする
+                        self.modes = self.type.get_mode()
                 elif self.state == States.MODE:
                     if event.key in [K_0, K_1, K_2]:
                         self.state = States.MODE  # 次の状態MODEに遷移する
@@ -128,7 +130,7 @@ class Drawer(State):
         )
         pygame.display.update()  # 画面更新
 
-    def mode(self, mode) -> None:
+    def mode(self) -> None:
         """難易度選択画面"""
         pygame.display.set_caption("タイピングゲーム(仮) | Choose")  # キャプション設定
         self.screen.fill(Color.BLACK.rgb)  # ウィンドウを塗りつぶす
@@ -138,9 +140,8 @@ class Drawer(State):
         self.screen.blit(
             text_h, [align.center(), align.middle() - text_h.get_height() * 2]
         )
-        print(mode)
         m = 0
-        for  x in mode:
+        for  x in self.modes:
             text_p1 = self.font_M.render("{}: {}".format(x.value,x.id), True, Color.WHITE.rgb)  # 難易度1
             align = Align(text_p1, self.width, self.height)
             self.screen.blit(text_p1, [align.center(), align.middle()+m])

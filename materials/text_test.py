@@ -32,13 +32,17 @@ if __name__ == "__main__":
                 pygame.quit()
                 sys.exit()
             elif event.type == KEYDOWN:
-                if event.key == K_BACKSPACE:  # BS時
-                    if not text.is_editing:  # 編集中(全角の変換前)でないとき
+                if not text.is_editing:  # 編集中(全角の変換前)でないとき
+                    if event.key == K_BACKSPACE:  # BS時
                         drawer.draw(text.delete())  # 確定した方から削除する
+                    if event.key == K_LEFT:
+                        drawer.draw(text.move_cursor_left())  # 文字のカーソルを左に動かす
+                    if event.key == K_RIGHT:
+                        drawer.draw(text.move_cursor_right())  # 文字のカーソルを右に動かす
                 if len(event.unicode) == 0:  # 確定時
                     if event.key == K_RETURN:
                         print(text.enter())  # 確定した文字の取得
-                        drawer.draw("")  # テキストボックスを空にする
+                        drawer.draw("|")  # テキストボックスを空にする
             elif event.type == TEXTEDITING:  # 全角入力するときに必ず真
                 drawer.draw(text.edit(event.text))
             elif event.type == TEXTINPUT:  # 半角入力するときに必ず使う(もしくは全角時enter)

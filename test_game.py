@@ -22,9 +22,11 @@ def main():
             continue
         # 状態遷移がされていれば、描画を更新する
         if game.state == States.TITLE:
-            game.title()
-        if game.state == States.CHOOSE:
-            game.choose()
+            game.title() 
+        if game.state == States.TYPE:
+            game.choose_type()
+        if game.state == States.MODE:
+            game.mode(game.type.get_mode())
         if game.state == States.PLAY:
             game.play()
         if game.state == States.RESULT:

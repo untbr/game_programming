@@ -6,10 +6,9 @@ from .colors import Color  # 色に関するモジュール
 
 
 class Drawer:
-    def __init__(self, w, h):
+    def __init__(self):
         pygame.init()  # Pygame初期化
-        self.width = w
-        self.height = h
+        self.width, self.height = (800, 600)
         self.screen = pygame.display.set_mode((self.width, self.height))
         self.font_small = pygame.font.SysFont("yumincho", 15)
         self.font_medium = pygame.font.SysFont("yumincho", 30)

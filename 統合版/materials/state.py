@@ -29,12 +29,12 @@ class State(Drawer):
     インスタンス作成後、title→mode→...とメソッドを順次呼び出していく
     """
 
-    def __init__(self, width: int, height: int) -> None:
+    def __init__(self) -> None:
         """
         コンストラクタ
         width: ウィンドウの横幅, height: ウィンドウの縦幅
         """
-        super().__init__(width, height)
+        super().__init__()
         self.user = User("test_user")  # ユーザー定義
         self.game = None  # ReportもしくはShiritoriのインスタンスを格納する変数
         self.game_mode = None

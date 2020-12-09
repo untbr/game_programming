@@ -5,7 +5,7 @@ def main():
     """
     ゲームのサンプル
     """
-    game = State(800, 600)  # インスタンス作成
+    game = State()  # インスタンス作成
     while True:
         game.title()  # タイトル画面
         game.mode()  # ゲーム選択画面

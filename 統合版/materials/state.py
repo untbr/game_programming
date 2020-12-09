@@ -56,9 +56,9 @@ class State(Drawer):
                 if event.type == QUIT:  # 閉じるボタン押下
                     events.quit_game()  # 終了
                 if event.type == KEYDOWN:
-                    if events.input_key(event.key) == "1":  # 開始
+                    if event.key == K_1:  # 開始
                         self.is_running = False  # 次の画面へ
-                    if events.input_key(event.key) == "2":  # 終了
+                    if event.key == K_2:  # 終了
                         events.quit_game()  # 終了
 
     def mode(self) -> None:
@@ -77,10 +77,10 @@ class State(Drawer):
                 if event.type == QUIT:
                     events.quit_game()  # 閉じるボタン押下で終了
                 if event.type == KEYDOWN:
-                    if events.input_key(event.key) == "1":  # 「レポートゲーム(仮)」を選択
+                    if event.key == K_1:  # 「レポートゲーム(仮)」を選択
                         self.game = Report()
                         self.is_running = False
-                    elif events.input_key(event.key) == "2":  # 「しりとりゲーム(仮)」を選択
+                    elif event.key == K_2:  # 「しりとりゲーム(仮)」を選択
                         self.game = Shiritori()
                         self.is_running = False
         self.game_mode = self.game.get_mode()  # 難易度(品詞)を取得

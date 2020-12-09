@@ -12,7 +12,7 @@ class ShiritoriClient:
     def __init__(self) -> None:
         self.mode = 0
         self.host = ShiritoriClient.host + "/shiritori/"
-        self.modes = None # self.request(self.host + "modes/")
+        self.modes = None  # self.request(self.host + "modes/")
 
     def request(self, url: str) -> Any:
         """

@@ -97,5 +97,11 @@ class Draw:
         入力文字を表示するためのメソッド
         """
         text_ = self.font.render(text, True, (255, 255, 255))  # 白フォント
-        self.screen.fill((0, 0, 0), (0, (600 - text_.get_height() * 2), float(800), float(text_.get_height())))  # 黒画面
-        self.screen.blit(text_, [((800 / 2) - (text_.get_width() / 2)), (600 - text_.get_height() * 2)])
+        self.screen.fill(
+            (0, 0, 0),
+            (0, (600 - text_.get_height() * 2), float(800), float(text_.get_height())),
+        )  # 黒画面
+        self.screen.blit(
+            text_,
+            [((800 / 2) - (text_.get_width() / 2)), (600 - text_.get_height() * 2)],
+        )

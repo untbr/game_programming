@@ -262,7 +262,7 @@ class Report(AGame):
         if q_word["answer"] == word:  # 正解のとき
             correct = True
             self.score.number_of_corrects += 1  # 正解数を更新する
-        else: # 不正解の時
+        else:  # 不正解の時
             self.score.number_of_incorrects += 1  # 不正解数を更新する
             self.add_words(1)  # 1単語追加する
             message = "正解は{}です".format(q_word["answer"])

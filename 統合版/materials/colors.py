@@ -47,4 +47,3 @@ class Color(Enum):
         for i, clr_value in enumerate(self.value):
             tmp[i] = value - clr_value  # valueからそれぞれのRGB値を引くことにより補色が求まる
         return tuple(tmp)  # タプル型にして返す
-

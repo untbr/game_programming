@@ -4,205 +4,180 @@
 """
 
 
-import textwrap
-import pygame
-from enum import Enum
-from pygame.locals import *  # 定数読み込み
-from .colors import Color  # 色に関するモジュール
-from .align import Align  # オブジェクトの配置に関するモジュール
-from . import events  # イベント処理に関するモジュール
+import os
 import sys
-sys.path.append('../')
-from game import game
+import textwrap
+import typing
+from time import sleep
 
-class States(Enum):
-    """状態の定義"""
-    TITLE = 0
-    TYPE = 1
-    MODE = 2
-    PLAY = 3
-    RESULT = 4
+import pygame
+from pygame.locals import *  # 定数読み込み
 
+from . import events  # イベント処理に関するモジュール
+from .colors import Color  # 色に関するモジュール
+from .drawer import Drawer
+from .text import Text  # テキスト入力に関するモジュール
 
-class State:
-    def __init__(self):
-        self.state = None
-        self.type = None
-        self.modes = None
-
-    def transition(self):
-        """現在時の状態とキーの押下に応じて状態を更新するメソッド"""
-        for event in pygame.event.get():
-            if self.state is None: # 初期状態のNoneであれば
-                self.state = States.TITLE
-            if event.type == KEYDOWN:
-                if event.key == K_ESCAPE:
-                    self.state = States.TITLE
-                # 状態がTITLEでキーの押下があったとき
-                elif self.state == States.TITLE:
-                    #if event.key == K_SPACE:
-                    self.state = States.TYPE  # 次の状態CHOOSEに遷移する
-                # 状態がCHOOSEでキーの押下があったとき
-                elif self.state == States.TYPE:
-                    if event.key in [K_f, K_j]:
-                        self.state = States.MODE  # 次の状態MODEに遷移する
-                        if event.key == K_f:
-                            self.type = game.Report() # typeをレポートゲームにする
-                        else:
-                            self.type = game.Shiritori() # typeをしりとりゲームにする
-                        self.modes = self.type.get_mode()
-                elif self.state == States.MODE:
-                    if event.key in [K_0, K_1, K_2]:
-                        self.state = States.MODE  # 次の状態MODEに遷移する
-                        self.type.set_mode(self.type.get_mode()[int(pygame.key.name(event.key))])
-                        self.state = States.PLAY
-                # 状態がPLAYでキーの押下があったとき
-                elif self.state == States.PLAY:
-                    if event.key == K_SPACE:
-                        self.state = States.RESULT  # 次の状態RESULTに遷移する
-                # 状態がRESULTでキーの押下があったとき
-                elif self.state == States.RESULT:
-                    if event.key == K_SPACE:
-                        self.state = States.TITLE  # 次の状態TITLEにする
-            if event.type == QUIT:
-                events.quit_game(event.type)  # 閉じるボタン押下で終了
+sys.path.append(os.pardir)
+from game.game import Report, Shiritori  # ゲームの処理に関するモジュール
+from game.user import User  # ユーザー情報に関するモジュール
 
 
-"""
-各画面を状態として捉えて処理を行うクラス
-インスタンス作成後、title→choose→play→resultメソッドを順次呼び出していく
-"""
+class State(Drawer):
+    """
+    各画面を状態として捉えて処理を行うクラス
+    インスタンス作成後、title→mode→...とメソッドを順次呼び出していく
+    """
 
-
-class Drawer(State):
-    def __init__(self, width: int, height: int) -> None:
+    def __init__(self) -> None:
         """
         コンストラクタ
         width: ウィンドウの横幅, height: ウィンドウの縦幅
         """
         super().__init__()
-        self.width = width  # ウィンドウ横幅
-        self.height = height  # ウィンドウ縦幅
-        pygame.init()  # Pygame初期化
-        self.screen = pygame.display.set_mode(
-            (self.width, self.height)
-        )  # ウィンドウ生成(横, 縦)
-        self.font_S = pygame.font.SysFont("yumincho", 15)  # テキスト：小
-        self.font_M = pygame.font.SysFont("yumincho", 30)  # テキスト：中
-        self.font_L = pygame.font.SysFont("yumincho", 60)  # テキスト：大
+        self.user = User("test_user")  # ユーザー定義
+        self.game = None  # ReportもしくはShiritoriのインスタンスを格納する変数
+        self.game_mode = None
+        self.is_running = True  # ゲームループの判定
 
     def title(self) -> None:
         """タイトル画面"""
         pygame.display.set_caption("タイピングゲーム(仮) | Title")  # キャプション設定
         self.screen.fill(Color.BLACK.rgb)  # ウィンドウを塗りつぶす
         # 画面に表示するテキストの設定
-        text_h = self.font_L.render("タイピングゲーム(仮)", True, Color.WHITE.rgb)  # タイトル
-        align = Align(text_h, self.width, self.height)
-        self.screen.blit(
-            text_h, [align.center(), align.middle() - text_h.get_height() * 2]
-        )
-        text_p = self.font_M.render(
-            "Please press any key...", True, Color.WHITE.rgb
-        )  # 操作の促し
-        align = Align(text_p, self.width, self.height)
-        self.screen.blit(text_p, [align.center(), align.middle()])
+        self.make_header("タイピングゲーム(仮)")
+        subheader_list = ['開始: " 1 "を入力してください', '終了: " 2 "を入力してください']
+        self.make_subheader(subheader_list)
         pygame.display.update()  # 画面更新
-
-    def choose_type(self) -> None:
-        """難易度選択画面"""
-        pygame.display.set_caption("タイピングゲーム(仮) | Choose")  # キャプション設定
-        self.screen.fill(Color.BLACK.rgb)  # ウィンドウを塗りつぶす
-        # 画面に表示するテキストの設定
-        text_h = self.font_L.render("難易度選択", True, Color.WHITE.rgb)  # タイトル
-        align = Align(text_h, self.width, self.height)
-        self.screen.blit(
-            text_h, [align.center(), align.middle() - text_h.get_height() * 2]
-        )
-        text_p1 = self.font_M.render('レポート: Input " f "', True, Color.WHITE.rgb)  # 難易度1
-        align = Align(text_p1, self.width, self.height)
-        self.screen.blit(text_p1, [align.center(), align.middle()])
-        text_p2 = self.font_M.render(
-            'しりとり: Input " j "', True, Color.WHITE.rgb
-        )  # 難易度2
-        align = Align(text_p2, self.width, self.height)
-        self.screen.blit(
-            text_p2, [align.center(), align.middle() + text_p2.get_height()]
-        )
-        pygame.display.update()  # 画面更新
+        self.is_running = True
+        while self.is_running:
+            # イベント処理
+            for event in pygame.event.get():
+                if event.type == QUIT:  # 閉じるボタン押下
+                    events.quit_game()  # 終了
+                if event.type == KEYDOWN:
+                    if event.key == K_1:  # 開始
+                        self.is_running = False  # 次の画面へ
+                    if event.key == K_2:  # 終了
+                        events.quit_game()  # 終了
 
     def mode(self) -> None:
-        """難易度選択画面"""
+        """ゲーム選択画面"""
+        pygame.display.set_caption("タイピングゲーム(仮) | Mode")  # キャプション設定
+        self.screen.fill(Color.BLACK.rgb)  # ウィンドウを塗りつぶす
+        # 画面に表示するテキストの設定
+        self.make_header("ゲーム選択")
+        subheader_list = ['レポートゲーム(仮): "1" を入力してください', 'しりとりゲーム(仮): "2"を入力してください']
+        self.make_subheader(subheader_list)
+        pygame.display.update()  # 画面更新
+        self.is_running = True
+        while self.is_running:
+            # イベント処理
+            for event in pygame.event.get():
+                if event.type == QUIT:
+                    events.quit_game()  # 閉じるボタン押下で終了
+                if event.type == KEYDOWN:
+                    if event.key == K_1:  # 「レポートゲーム(仮)」を選択
+                        self.game = Report()
+                        self.is_running = False
+                    elif event.key == K_2:  # 「しりとりゲーム(仮)」を選択
+                        self.game = Shiritori()
+                        self.is_running = False
+        self.game_mode = self.game.get_mode()  # 難易度(品詞)を取得
+
+    def choose(self) -> None:
+        """モード選択画面"""
         pygame.display.set_caption("タイピングゲーム(仮) | Choose")  # キャプション設定
         self.screen.fill(Color.BLACK.rgb)  # ウィンドウを塗りつぶす
         # 画面に表示するテキストの設定
-        text_h = self.font_L.render("難易度選択", True, Color.WHITE.rgb)  # タイトル
-        align = Align(text_h, self.width, self.height)
-        self.screen.blit(
-            text_h, [align.center(), align.middle() - text_h.get_height() * 2]
-        )
-        m = 0
-        for  x in self.modes:
-            text_p1 = self.font_M.render("{}: {}".format(x.value,x.id), True, Color.WHITE.rgb)  # 難易度1
-            align = Align(text_p1, self.width, self.height)
-            self.screen.blit(text_p1, [align.center(), align.middle()+m])
-            m += 30
+        self.make_header("モード選択")
+        mode_list = [
+            '{0}: " {1} "を入力してください'.format(i.value, i.id) for i in self.game_mode
+        ]
+        self.make_subheader(mode_list)
         pygame.display.update()  # 画面更新
+
+        self.is_running = True
+        while self.is_running:
+            # イベント処理
+            for event in pygame.event.get():
+                if event.type == QUIT:
+                    events.quit_game()  # 閉じるボタン押下で終了
+                if event.type == KEYDOWN:
+                    if event.key in [K_0, K_1, K_2]:
+                        key_name = int(pygame.key.name(event.key))
+                        self.game.set_mode(self.game_mode[key_name])  # 難易度/品詞の設定
+                        self.is_running = False
 
     def play(self) -> None:
         """ゲームプレイ画面"""
         pygame.display.set_caption("タイピングゲーム(仮) | Play")  # キャプション設定
-        self.screen.fill(Color.BLACK.rgb)  # ウィンドウを塗りつぶす
-        # 画面に表示するテキストの設定
-        text_h = self.font_M.render("時間内に入力せよ！", True, Color.WHITE.rgb)  # 小見出し
-        align = Align(text_h, self.width, self.height)
-        self.screen.blit(text_h, [align.left() + 10, align.top() + 10])
-        text_time = self.font_M.render("00:00", True, Color.WHITE.rgb)  # 残り時間
-        align = Align(text_time, self.width, self.height)
-        self.screen.blit(text_time, [align.right() - 10, align.top() + 10])
+        while not self.game.is_finish():
+            self.screen.fill(Color.BLACK.rgb)  # ウィンドウを塗りつぶす
+            # 画面に表示するテキストの設定
+            self.make_top_left_subheader("時間内に入力せよ")
+            self.make_top_right_subheader("00:00")
+            question = self.game.get_word()  # 出題をしてもらう
 
-        #text_word = self.font_L.render("オブ○ェクト", True, Color.WHITE.rgb)  # 単語
-        #align = Align(text_word, self.width, self.height)
-        #self.screen.blit(
-        #    text_word, [align.center(), align.middle() - text_h.get_height() * 3]
-        #)
-        #text = "オブジェクトとは、物、物体、目標物、対象、目的語、客体、などの意味を持つ英単語。"
-        #for i, desc in enumerate(textwrap.wrap(text, 18)):
-        #    text_desc = self.font_M.render(desc, True, Color.WHITE.rgb)  # 説明
-        #    align = Align(text_desc, self.width, self.height)
-        #    self.screen.blit(
-        #        text_desc,
-        #        [
-        #            align.center(),
-        #            align.middle()
-        #            + text_desc.get_height() * i
-        #            - text_desc.get_height(),
-        #        ],
-        #    )
-        pygame.display.update()  # 画面更新
+            used_height = self.make_header(question.word, -80)  # 取得した単語の表示
+            description_list = textwrap.wrap(question.describe, 18)  # 18字ごとに区切る
+            self.make_subheader(description_list, -used_height * 3)  # 取得した説明の表示
+
+            pygame.display.update()  # 画面更新
+            # 文字入力に必要な変数
+            text_give = ""
+            text = Text()  # Textクラスのインスタンス化
+            self.is_running = True
+            while self.is_running:
+                # イベント処理
+                for event in pygame.event.get():
+                    if event.type == QUIT:
+                        events.quit_game()  # 閉じるボタン押下で終了
+                    elif event.type == KEYDOWN:
+                        if not text.is_editing:  # 編集中(全角の変換前)でないとき
+                            if event.key == K_BACKSPACE:  # BS時
+                                self.text_box(text.delete())  # 確定した方から削除する
+                            if event.key == K_LEFT:
+                                self.text_box(text.move_cursor_left())  # 文字のカーソルを左に動かす
+                            if event.key == K_RIGHT:
+                                self.text_box(text.move_cursor_right())  # 文字のカーソルを右に動かす
+                        if len(event.unicode) == 0:  # 確定時
+                            if event.key == K_RETURN:
+                                text_give = text.enter()  # 確定した文字の取得
+                                self.text_box("|")  # テキストボックスを空にする
+                                self.is_running = False
+                    elif event.type == TEXTEDITING:  # 全角入力するときに必ず真
+                        self.text_box(text.edit(event.text))
+                    elif event.type == TEXTINPUT:  # 半角入力するときに必ず使う(もしくは全角時enter)
+                        self.text_box(text.input(event.text))
+                pygame.display.update()
+            judge = self.game.judge_word(text_give)  # 正誤判定
+            if not judge.correct:  # 不正解時
+                # 上書き(塗りつぶし) rect値(x, y, width, height)
+                self.screen.fill(
+                    Color.BLACK.rgb,
+                    (0.0, float(self.height - 30 * 2), float(self.width), float(30)),
+                )
+                pygame.display.update()  # 画面更新
+                self.make_bottom_subheader(judge.message)
+                pygame.display.update()  # 画面更新
+                sleep(2)  # 不正解時のメッセージを見せるために2秒待機
+        self.user.add_score(self.game.score)  # ユーザーの情報にスコアを追加
 
     def result(self):
         """リザルト画面"""
         pygame.display.set_caption("タイピングゲーム(仮) | Result")  # キャプション設定
+        result = format(self.user).split("\n")
         self.screen.fill(Color.BLACK.rgb)  # ウィンドウを塗りつぶす
-        # 画面に表示するテキストの設定
-        text_h = self.font_L.render("リザルト", True, Color.WHITE.rgb)  # ヘッダー
-        align = Align(text_h, self.width, self.height)
-        self.screen.blit(
-            text_h, [align.center(), align.middle() - text_h.get_height() * 2]
-        )
-        text_p1 = self.font_M.render("正解：{0}".format(0), True, Color.WHITE.rgb)  # 正解
-        align = Align(text_p1, self.width, self.height)
-        self.screen.blit(text_p1, [align.center(), align.middle()])
-        text_p2 = self.font_M.render("不正解：{0}".format(0), True, Color.WHITE.rgb)  # 不正解
-        align = Align(text_p2, self.width, self.height)
-        self.screen.blit(
-            text_p2, [align.center(), align.middle() + text_p2.get_height()]
-        )
-        text_p3 = self.font_M.render(
-            "Please press any key...".format(0), True, Color.WHITE.rgb
-        )  # 操作の促し
-        align = Align(text_p3, self.width, self.height)
-        self.screen.blit(
-            text_p3, [align.center(), align.middle() + text_p3.get_height() * 3]
-        )
+        self.make_header("リザルト")
+        self.make_subheader(result)
+        self.make_subheader(["Please press any key...".format(0)], 150)
         pygame.display.update()  # 画面更新
+        self.is_running = True
+        while self.is_running:
+            # イベント処理
+            for event in pygame.event.get():
+                if event.type == QUIT:
+                    events.quit_game()  # 閉じるボタン押下で終了
+                if event.type == KEYDOWN:
+                    self.is_running = False  # キー入力検知で次の画面へ

@@ -12,8 +12,9 @@ from pygame.locals import *  # 定数読み込み
 from .colors import Color  # 色に関するモジュール
 from .align import Align  # オブジェクトの配置に関するモジュール
 from . import events  # イベント処理に関するモジュール
-from .game import Report, Shiritori
-from .user import User
+from .game import Report, Shiritori  # ゲームの処理に関するモジュール
+from .user import User  # ユーザー情報に関するモジュール
+from .text import Text, Draw  # テキスト入力に関するモジュール
 
 
 class State:
@@ -138,9 +139,6 @@ class State:
             text_time = self.font_M.render('00:00', True, Color.WHITE.rgb)  # 残り時間 ダミー
             align = Align(text_time, self.width, self.height)
             self.screen.blit(text_time, [align.right() - 10, align.top() + 10])
-            text_input = self.font_M.render('|', True, Color.WHITE.rgb)  # 入力文字
-            align = Align(text_input, self.width, self.height)
-            self.screen.blit(text_input, [align.center(), align.bottom() - text_input.get_height()])
             word = self.game.get_word()  # 出題をしてもらう
             text_word = self.font_L.render(word.word, True, Color.WHITE.rgb)  # 単語
             align = Align(text_word, self.width, self.height)
@@ -151,44 +149,37 @@ class State:
                 self.screen.blit(text_desc, [align.center(), align.top() + text_desc.get_height()*(i + 1) + text_h.get_height()*3])
             pygame.display.update()  # 画面更新
             # 文字入力に必要な変数
-            txt_give = ''  # 最終的に正誤処理へ渡す文字列を保持する変数
-            txt_words = []  # 入力された文字を保持するリスト
-            txt_tmp = ''  # 入力された1文字を一時的に保持する変数
+            text_give = ''
+            text = Text()  # Textクラスのインスタンス化
+            drawer = Draw((self.width, self.height), self.screen)
             self.is_running = True
             while(self.is_running):
                 # イベント処理
                 for event in pygame.event.get():
                     if event.type == QUIT:
                         events.quit_game()  # 閉じるボタン押下で終了
-                    if event.type == KEYDOWN:
-                        if event.key == K_RETURN:  # Enter押下時
-                            txt_give = ''.join(txt_words)  # 文字列に直す
-                            txt_words = []  # 初期化
-                            self.is_running = False
-                        elif event.key == K_BACKSPACE:  # BackSpace押下時
-                            if not len(txt_words) == 0:
-                                txt_words.pop()  # 最後の文字を取り出す(削除)
-                        else:  # 上記以外のキーが押された時
-                            txt_tmp = events.input_key(event.key)
-                            if not txt_tmp == None:  # 入力受取の可否判断
-                                txt_words.append(txt_tmp)
-                        # 上書き(塗りつぶし) rect値(x, y, width, height)
-                        self.screen.fill(Color.BLACK.rgb, (float(align.center()), float(align.bottom() - text_input.get_height()), float(self.width), float(text_input.get_height())))
-                        pygame.display.update()  # 画面更新
-                        if not len(txt_words) == 0:  # 表示するテキストが存在するかの判断
-                            text_input = self.font_M.render(''.join(txt_words) + '|', True, Color.WHITE.rgb)
-                        else:
-                            if not self.is_running == False:  # Enterが押された後か判断
-                                text_input = self.font_M.render('|', True, Color.WHITE.rgb)
-                            else:
-                                text_input = self.font_M.render(txt_give, True, Color.WHITE.rgb)
-                        align = Align(text_input, self.width, self.height)
-                        self.screen.blit(text_input, [align.center(), align.bottom() - text_input.get_height()])
-                        pygame.display.update()  # 画面更新
-            judge = self.game.judge_word(txt_give)  # 正誤判定
+                    elif event.type == KEYDOWN:
+                        if not text.is_editing:  # 編集中(全角の変換前)でないとき
+                            if event.key == K_BACKSPACE:  # BS時
+                                drawer.draw(text.delete())  # 確定した方から削除する
+                            if event.key == K_LEFT:
+                                drawer.draw(text.move_cursor_left())  # 文字のカーソルを左に動かす
+                            if event.key == K_RIGHT:
+                                drawer.draw(text.move_cursor_right())  # 文字のカーソルを右に動かす
+                        if len(event.unicode) == 0:  # 確定時
+                            if event.key == K_RETURN:
+                                text_give = text.enter()  # 確定した文字の取得
+                                drawer.draw("|")  # テキストボックスを空にする
+                                self.is_running = False
+                    elif event.type == TEXTEDITING:  # 全角入力するときに必ず真
+                        drawer.draw(text.edit(event.text))
+                    elif event.type == TEXTINPUT:  # 半角入力するときに必ず使う(もしくは全角時enter)
+                        drawer.draw(text.input(event.text))
+                pygame.display.update()
+            judge = self.game.judge_word(text_give)  # 正誤判定
             if not judge.correct:  # 不正解時
                 # 上書き(塗りつぶし) rect値(x, y, width, height)
-                self.screen.fill(Color.BLACK.rgb, (float(align.center()), float(align.bottom() - text_input.get_height()), float(self.width), float(text_input.get_height())))
+                self.screen.fill(Color.BLACK.rgb, (0.0, float(self.height - 30 * 2), float(self.width), float(30)))
                 pygame.display.update()  # 画面更新
                 text_jud = self.font_M.render(judge.message, True, Color.RED.rgb)  # 入力文字
                 align = Align(text_jud, self.width, self.height)

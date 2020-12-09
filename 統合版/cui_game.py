@@ -1,5 +1,5 @@
-from materials.game import Report, Shiritori
-from materials.user import User
+from game.game import Report, Shiritori
+from game.user import User
 
 
 def main():
@@ -26,7 +26,6 @@ def main():
     user.add_score(game.score)  # ユーザーの情報にスコアを追加
     print("終了")
     print(user)
-    print(type(user))
     share = input("ツイッターで結果をシェアしますか？ y/n: ")
     if share == "y":
         user.share()

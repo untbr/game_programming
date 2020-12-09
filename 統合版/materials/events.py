@@ -3,6 +3,7 @@
 
 import sys
 from typing import Union
+
 import pygame
 from pygame.locals import *  # 定数読み込み
 

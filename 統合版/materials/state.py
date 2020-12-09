@@ -4,17 +4,19 @@
 """
 
 
-import textwrap
-from time import sleep
-import typing
-import pygame
-from pygame.locals import *  # 定数読み込み
-from .colors import Color  # 色に関するモジュール
-from .align import Align  # オブジェクトの配置に関するモジュール
-from . import events  # イベント処理に関するモジュール
-from .text import Text, Draw  # テキスト入力に関するモジュール
 import os
 import sys
+import textwrap
+import typing
+from time import sleep
+
+import pygame
+from pygame.locals import *  # 定数読み込み
+
+from . import events  # イベント処理に関するモジュール
+from .align import Align  # オブジェクトの配置に関するモジュール
+from .colors import Color  # 色に関するモジュール
+from .text import Draw, Text  # テキスト入力に関するモジュール
 
 sys.path.append(os.pardir)
 from game.game import Report, Shiritori  # ゲームの処理に関するモジュール

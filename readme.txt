@@ -8,9 +8,9 @@
 - レポートゲーム(仮)
 - しりとりゲーム(仮)
 の2つを遊べるゲームです。
-このファイル(readme.txt)と同じ階層にあるstart.pyとmaterials(ディレクトリ)を同一階層に配置した上でCUI上から
-	$ python start.py
-等のコマンドでstart.pyを実行してください。
+このファイル(readme.txt)と同じ階層にあるtyping_game.pyとmaterials、game(ディレクトリ)を同一階層に配置した上でCUI上から
+	$ python typing_game.py
+等のコマンドでtyping_game.pyを実行してください。
 未完成なので実行は自己責任でお願いします(よっぽど無茶な動かし方をしなければ問題ないと思います)。
 バグ/不自然な挙動を見つけた場合は報告をお願いします。
 

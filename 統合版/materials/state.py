@@ -14,16 +14,16 @@ import pygame
 from pygame.locals import *  # 定数読み込み
 
 from . import events  # イベント処理に関するモジュール
-from .align import Align  # オブジェクトの配置に関するモジュール
 from .colors import Color  # 色に関するモジュール
 from .text import Draw, Text  # テキスト入力に関するモジュール
+from .drawer import Drawer
 
 sys.path.append(os.pardir)
 from game.game import Report, Shiritori  # ゲームの処理に関するモジュール
 from game.user import User  # ユーザー情報に関するモジュール
 
 
-class State:
+class State(Drawer):
     """
     各画面を状態として捉えて処理を行うクラス
     インスタンス作成後、title→mode→...とメソッドを順次呼び出していく
@@ -34,38 +34,20 @@ class State:
         コンストラクタ
         width: ウィンドウの横幅, height: ウィンドウの縦幅
         """
+        super().__init__(width, height)
         self.user = User("test_user")  # ユーザー定義
         self.game = None  # ReportもしくはShiritoriのインスタンスを格納する変数
         self.game_mode = None
-        self.width = width  # ウィンドウ横幅
-        self.height = height  # ウィンドウ縦幅
         self.is_running = True  # ゲームループの判定
-        pygame.init()  # Pygame初期化
-        self.screen = pygame.display.set_mode(
-            (self.width, self.height)
-        )  # ウィンドウ生成(横, 縦)
-        self.font_S = pygame.font.SysFont("yumincho", 15)  # テキスト：小
-        self.font_M = pygame.font.SysFont("yumincho", 30)  # テキスト：中
-        self.font_L = pygame.font.SysFont("yumincho", 60)  # テキスト：大
 
     def title(self) -> None:
         """タイトル画面"""
         pygame.display.set_caption("タイピングゲーム(仮) | Title")  # キャプション設定
         self.screen.fill(Color.BLACK.rgb)  # ウィンドウを塗りつぶす
         # 画面に表示するテキストの設定
-        text_h = self.font_L.render("タイピングゲーム(仮)", True, Color.WHITE.rgb)  # タイトル
-        align = Align(text_h, self.width, self.height)
-        self.screen.blit(
-            text_h, [align.center(), align.middle() - text_h.get_height() * 2]
-        )
-        text_p1 = self.font_M.render('開始: " 1 "を入力してください', True, Color.WHITE.rgb)  # 開始
-        align = Align(text_p1, self.width, self.height)
-        self.screen.blit(text_p1, [align.center(), align.middle()])
-        text_p2 = self.font_M.render('終了: " 2 "を入力してください', True, Color.WHITE.rgb)  # 終了
-        align = Align(text_p2, self.width, self.height)
-        self.screen.blit(
-            text_p2, [align.center(), align.middle() + text_p2.get_height() * 2]
-        )
+        self.make_header("タイピングゲーム(仮)")
+        subheader_list = ['開始: " 1 "を入力してください', '終了: " 2 "を入力してください']
+        self.make_subheader(subheader_list)
         pygame.display.update()  # 画面更新
         self.is_running = True
         while self.is_running:
@@ -84,23 +66,9 @@ class State:
         pygame.display.set_caption("タイピングゲーム(仮) | Mode")  # キャプション設定
         self.screen.fill(Color.BLACK.rgb)  # ウィンドウを塗りつぶす
         # 画面に表示するテキストの設定
-        text_h = self.font_L.render("ゲーム選択", True, Color.WHITE.rgb)  # タイトル
-        align = Align(text_h, self.width, self.height)
-        self.screen.blit(
-            text_h, [align.center(), align.middle() - text_h.get_height() * 2]
-        )
-        text_p1 = self.font_M.render(
-            'レポートゲーム(仮): " 1 "を入力してください', True, Color.WHITE.rgb
-        )
-        align = Align(text_p1, self.width, self.height)
-        self.screen.blit(text_p1, [align.center(), align.middle()])
-        text_p2 = self.font_M.render(
-            'しりとりゲーム(仮): " 2 "を入力してください', True, Color.WHITE.rgb
-        )
-        align = Align(text_p2, self.width, self.height)
-        self.screen.blit(
-            text_p2, [align.center(), align.middle() + text_p2.get_height()]
-        )
+        self.make_header("ゲーム選択")
+        subheader_list = ['レポートゲーム(仮): "1" を入力してください', 'しりとりゲーム(仮): "2"を入力してください']
+        self.make_subheader(subheader_list)
         pygame.display.update()  # 画面更新
         self.is_running = True
         while self.is_running:
@@ -122,20 +90,13 @@ class State:
         pygame.display.set_caption("タイピングゲーム(仮) | Choose")  # キャプション設定
         self.screen.fill(Color.BLACK.rgb)  # ウィンドウを塗りつぶす
         # 画面に表示するテキストの設定
-        text_h = self.font_L.render("モード選択", True, Color.WHITE.rgb)  # タイトル
-        align = Align(text_h, self.width, self.height)
-        self.screen.blit(
-            text_h, [align.center(), align.middle() - text_h.get_height() * 2]
-        )
-        for i in self.game_mode:
-            text_p = self.font_M.render(
-                '{0}: " {1} "を入力してください'.format(i.value, i.id), True, Color.WHITE.rgb
-            )
-            align = Align(text_p, self.width, self.height)
-            self.screen.blit(
-                text_p, [align.center(), align.middle() + text_p.get_height() * i.id]
-            )
+        self.make_header("モード選択")
+        mode_list = [
+            '{0}: " {1} "を入力してください'.format(i.value, i.id) for i in self.game_mode
+        ]
+        self.make_subheader(mode_list)
         pygame.display.update()  # 画面更新
+
         self.is_running = True
         while self.is_running:
             # イベント処理
@@ -159,30 +120,14 @@ class State:
         while not self.game.is_finish():
             self.screen.fill(Color.BLACK.rgb)  # ウィンドウを塗りつぶす
             # 画面に表示するテキストの設定
-            text_h = self.font_M.render("時間内に入力せよ！", True, Color.WHITE.rgb)  # 小見出し
-            align = Align(text_h, self.width, self.height)
-            self.screen.blit(text_h, [align.left() + 10, align.top() + 10])
-            text_time = self.font_M.render("00:00", True, Color.WHITE.rgb)  # 残り時間 ダミー
-            align = Align(text_time, self.width, self.height)
-            self.screen.blit(text_time, [align.right() - 10, align.top() + 10])
-            word = self.game.get_word()  # 出題をしてもらう
-            text_word = self.font_L.render(word.word, True, Color.WHITE.rgb)  # 単語
-            align = Align(text_word, self.width, self.height)
-            self.screen.blit(
-                text_word, [align.center(), align.top() + text_h.get_height() * 2]
-            )
-            for i, desc in enumerate(textwrap.wrap(word.describe, 18)):
-                text_desc = self.font_M.render(desc, True, Color.WHITE.rgb)  # 説明
-                align = Align(text_desc, self.width, self.height)
-                self.screen.blit(
-                    text_desc,
-                    [
-                        align.center(),
-                        align.top()
-                        + text_desc.get_height() * (i + 1)
-                        + text_h.get_height() * 3,
-                    ],
-                )
+            self.make_top_left_subheader("時間内に入力せよ")
+            self.make_top_right_subheader("00:00")
+            question = self.game.get_word()  # 出題をしてもらう
+
+            used_height = self.make_header(question.word, -80)  # 取得した単語の表示
+            description_list = textwrap.wrap(question.describe, 18)  # 18字ごとに区切る
+            self.make_subheader(description_list, -used_height * 3)  # 取得した説明の表示
+
             pygame.display.update()  # 画面更新
             # 文字入力に必要な変数
             text_give = ""
@@ -220,13 +165,7 @@ class State:
                     (0.0, float(self.height - 30 * 2), float(self.width), float(30)),
                 )
                 pygame.display.update()  # 画面更新
-                text_jud = self.font_M.render(
-                    judge.message, True, Color.RED.rgb
-                )  # 入力文字
-                align = Align(text_jud, self.width, self.height)
-                self.screen.blit(
-                    text_jud, [align.center(), align.bottom() - text_jud.get_height()]
-                )
+                self.make_bottom_subheader(judge.message)
                 pygame.display.update()  # 画面更新
                 sleep(2)  # 不正解時のメッセージを見せるために2秒待機
         self.user.add_score(self.game.score)  # ユーザーの情報にスコアを追加
@@ -234,27 +173,11 @@ class State:
     def result(self):
         """リザルト画面"""
         pygame.display.set_caption("タイピングゲーム(仮) | Result")  # キャプション設定
+        result = format(self.user).split("\n")
         self.screen.fill(Color.BLACK.rgb)  # ウィンドウを塗りつぶす
-        # 画面に表示するテキストの設定
-        text_h = self.font_L.render("リザルト", True, Color.WHITE.rgb)  # ヘッダー
-        align = Align(text_h, self.width, self.height)
-        self.screen.blit(
-            text_h, [align.center(), align.middle() - text_h.get_height() * 2]
-        )
-        result = self.user.__str__().split("\n")  # ちょっと無理に処理
-        for i, val in enumerate(result):
-            text_p = self.font_M.render(val, True, Color.WHITE.rgb)  # リザルト
-            align = Align(text_p, self.width, self.height)
-            self.screen.blit(
-                text_p, [align.center(), align.middle() + text_p.get_height() * i]
-            )
-        text_next = self.font_M.render(
-            "Please press any key...".format(0), True, Color.WHITE.rgb
-        )  # 操作の促し
-        align = Align(text_next, self.width, self.height)
-        self.screen.blit(
-            text_next, [align.center(), align.middle() + text_next.get_height() * 5]
-        )
+        self.make_header("リザルト")
+        self.make_subheader(result)
+        self.make_subheader(["Please press any key...".format(0)], 150)
         pygame.display.update()  # 画面更新
         self.is_running = True
         while self.is_running:

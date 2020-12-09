@@ -104,15 +104,10 @@ class State(Drawer):
                 if event.type == QUIT:
                     events.quit_game()  # 閉じるボタン押下で終了
                 if event.type == KEYDOWN:
-                    if events.input_key(event.key) == "0":  # 「かんたん/名詞」を選択
-                        self.game.set_mode(self.game_mode[int(0)])  # 難易度/品詞の設定
-                        self.is_running = False
-                    elif events.input_key(event.key) == "1":  # 「ふつう/動詞」を選択
-                        self.game.set_mode(self.game_mode[int(1)])  # 難易度/品詞の設定
-                        self.is_running = False
-                    elif events.input_key(event.key) == "2":  # 「むずかしい/形容詞」を選択
-                        self.game.set_mode(self.game_mode[int(2)])  # 難易度/品詞の設定
-                        self.is_running = False
+                    if event.key in [K_0, K_1, K_2]:
+                       key_name = int(pygame.key.name(event.key)) 
+                       self.game.set_mode(self.game_mode[key_name])  # 難易度/品詞の設定
+                       self.is_running = False
 
     def play(self) -> None:
         """ゲームプレイ画面"""

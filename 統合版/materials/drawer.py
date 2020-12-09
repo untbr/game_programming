@@ -58,3 +58,25 @@ class Drawer:
         self.screen.blit(
             text_surface, [align.center(), align.bottom() - text_surface.get_height()]
         )
+
+    def text_box(self, text):
+        """
+        入力文字を表示するためのメソッド
+        """
+        text_surface = self.font_medium.render(text, True, (255, 255, 255))
+        self.screen.fill(
+            (0, 0, 0),
+            (
+                0,
+                (600 - text_surface.get_height() * 2),
+                float(800),
+                float(text_surface.get_height()),
+            ),
+        )
+        self.screen.blit(
+            text_surface,
+            [
+                ((800 / 2) - (text_surface.get_width() / 2)),
+                (600 - text_surface.get_height() * 2),
+            ],
+        )

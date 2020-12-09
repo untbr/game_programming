@@ -82,26 +82,3 @@ class Text:
             )
             self.cursor_pos += 1  # カーソルが1つ後ろに行ったのでインクリメント
         return format(self)
-
-
-class Draw:
-    """テキストを表示するためのクラス(= TextクラスとUI処理を分離するための別のクラス)"""
-
-    def __init__(self, win_size, screen):
-        self.font = pygame.font.SysFont("yumincho", 30)
-        self.screen = screen
-        self.is_editing = False
-
-    def draw(self, text):
-        """
-        入力文字を表示するためのメソッド
-        """
-        text_ = self.font.render(text, True, (255, 255, 255))  # 白フォント
-        self.screen.fill(
-            (0, 0, 0),
-            (0, (600 - text_.get_height() * 2), float(800), float(text_.get_height())),
-        )  # 黒画面
-        self.screen.blit(
-            text_,
-            [((800 / 2) - (text_.get_width() / 2)), (600 - text_.get_height() * 2)],
-        )

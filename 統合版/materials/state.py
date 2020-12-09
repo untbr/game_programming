@@ -15,7 +15,7 @@ from pygame.locals import *  # 定数読み込み
 
 from . import events  # イベント処理に関するモジュール
 from .colors import Color  # 色に関するモジュール
-from .text import Draw, Text  # テキスト入力に関するモジュール
+from .text import Text  # テキスト入力に関するモジュール
 from .drawer import Drawer
 
 sys.path.append(os.pardir)
@@ -127,7 +127,6 @@ class State(Drawer):
             # 文字入力に必要な変数
             text_give = ""
             text = Text()  # Textクラスのインスタンス化
-            drawer = Draw((self.width, self.height), self.screen)
             self.is_running = True
             while self.is_running:
                 # イベント処理
@@ -137,20 +136,20 @@ class State(Drawer):
                     elif event.type == KEYDOWN:
                         if not text.is_editing:  # 編集中(全角の変換前)でないとき
                             if event.key == K_BACKSPACE:  # BS時
-                                drawer.draw(text.delete())  # 確定した方から削除する
+                                self.text_box(text.delete())  # 確定した方から削除する
                             if event.key == K_LEFT:
-                                drawer.draw(text.move_cursor_left())  # 文字のカーソルを左に動かす
+                                self.text_box(text.move_cursor_left())  # 文字のカーソルを左に動かす
                             if event.key == K_RIGHT:
-                                drawer.draw(text.move_cursor_right())  # 文字のカーソルを右に動かす
+                                self.text_box(text.move_cursor_right())  # 文字のカーソルを右に動かす
                         if len(event.unicode) == 0:  # 確定時
                             if event.key == K_RETURN:
                                 text_give = text.enter()  # 確定した文字の取得
-                                drawer.draw("|")  # テキストボックスを空にする
+                                self.text_box("|")  # テキストボックスを空にする
                                 self.is_running = False
                     elif event.type == TEXTEDITING:  # 全角入力するときに必ず真
-                        drawer.draw(text.edit(event.text))
+                        self.text_box(text.edit(event.text))
                     elif event.type == TEXTINPUT:  # 半角入力するときに必ず使う(もしくは全角時enter)
-                        drawer.draw(text.input(event.text))
+                        self.text_box(text.input(event.text))
                 pygame.display.update()
             judge = self.game.judge_word(text_give)  # 正誤判定
             if not judge.correct:  # 不正解時

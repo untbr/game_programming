@@ -15,8 +15,8 @@ from pygame.locals import *  # 定数読み込み
 
 from . import events  # イベント処理に関するモジュール
 from .colors import Color  # 色に関するモジュール
-from .text import Text  # テキスト入力に関するモジュール
 from .drawer import Drawer
+from .text import Text  # テキスト入力に関するモジュール
 
 sys.path.append(os.pardir)
 from game.game import Report, Shiritori  # ゲームの処理に関するモジュール
@@ -105,9 +105,9 @@ class State(Drawer):
                     events.quit_game()  # 閉じるボタン押下で終了
                 if event.type == KEYDOWN:
                     if event.key in [K_0, K_1, K_2]:
-                       key_name = int(pygame.key.name(event.key)) 
-                       self.game.set_mode(self.game_mode[key_name])  # 難易度/品詞の設定
-                       self.is_running = False
+                        key_name = int(pygame.key.name(event.key))
+                        self.game.set_mode(self.game_mode[key_name])  # 難易度/品詞の設定
+                        self.is_running = False
 
     def play(self) -> None:
         """ゲームプレイ画面"""

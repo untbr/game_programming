@@ -39,6 +39,7 @@ class State(Drawer):
         self.game = None  # ReportもしくはShiritoriのインスタンスを格納する変数
         self.game_mode = None
         self.is_running = True  # ゲームループの判定
+        pygame.key.stop_text_input()
 
     def title(self) -> None:
         """タイトル画面"""

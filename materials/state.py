@@ -172,6 +172,7 @@ class Draw(Drawer):
                 pygame.display.update()  # 画面更新
                 sleep(2)  # 不正解時のメッセージを見せるために2秒待機
         self.user.add_score(self.game.score)  # ユーザーの情報にスコアを追加
+        pygame.key.stop_text_input()
 
     def input_text(self):
         for event in pygame.event.get():

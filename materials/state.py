@@ -40,7 +40,7 @@ class State:
     def __init__(self):
         self.state = States.TITLE
         self.is_running = False
-        self.is_finish = False # RESULTに遷移するための条件の一つ
+        self.is_finish = False  # RESULTに遷移するための条件の一つ
         self.game_types = ["dummy", "Report", "Shiritori"]
         self.game_instance = None
         self.game_modes = None
@@ -59,22 +59,22 @@ class State:
                         events.quit_game()  # 終了
             elif self.state == States.TYPE:  # ゲームタイプ選択
                 if event.type == KEYDOWN:
-                    if event.key in [K_1, K_2]: # レポート or しりとり
+                    if event.key in [K_1, K_2]:  # レポート or しりとり
                         cls = getattr(
                             game, self.game_types[int(pygame.key.name(event.key))]
                         )
-                        self.game_instance = cls() # 選択されたタイプのインスタンス化
-                        self.game_modes = self.game_instance.get_mode() # モード取得
-                        self.state = States.MODE # モード選択へ遷移
-            elif self.state == States.MODE: # モード選択
+                        self.game_instance = cls()  # 選択されたタイプのインスタンス化
+                        self.game_modes = self.game_instance.get_mode()  # モード取得
+                        self.state = States.MODE  # モード選択へ遷移
+            elif self.state == States.MODE:  # モード選択
                 if event.type == KEYDOWN:
                     if event.key in [K_0, K_1, K_2]:
                         key_name = int(pygame.key.name(event.key))
-                        mode = self.game_modes[key_name] 
-                        self.game_instance.set_mode(mode) # モードのセット
-                        self.state = States.PLAY # ゲームプレイへ遷移
-            elif self.state == States.PLAY and self.is_finish: # ゲームプレイ画面で、問題が解き終わったら
-                self.state = States.RESULT # リザルトへ遷移
+                        mode = self.game_modes[key_name]
+                        self.game_instance.set_mode(mode)  # モードのセット
+                        self.state = States.PLAY  # ゲームプレイへ遷移
+            elif self.state == States.PLAY and self.is_finish:  # ゲームプレイ画面で、問題が解き終わったら
+                self.state = States.RESULT  # リザルトへ遷移
             elif self.state == States.RESULT:
                 if event.type == KEYDOWN:
                     self.is_finish = False
@@ -129,9 +129,7 @@ class StateDraw(Drawer):
         self.screen.fill(Color.BLACK.rgb)  # ウィンドウを塗りつぶす
         # 画面に表示するテキストの設定
         self.make_header("モード選択")
-        mode_list = [
-            '{0}: " {1} "を入力してください'.format(i.value, i.id) for i in game_modes
-        ]
+        mode_list = ['{0}: " {1} "を入力してください'.format(i.value, i.id) for i in game_modes]
         self.make_subheader(mode_list)
         pygame.display.update()  # 画面更新
 

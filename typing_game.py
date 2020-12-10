@@ -8,7 +8,7 @@ def main():
     draw = StateDraw()
     state = State()  # インスタンス作成
     while True:
-        state.transition()
+        state.transition()  # キーダウンに応じて状態遷
         if not state.is_running:
             if state.state == States.TITLE:
                 draw.title()  # タイトル画面の描画

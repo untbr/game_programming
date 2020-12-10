@@ -40,11 +40,10 @@ class State:
     def __init__(self):
         self.state = States.TITLE
         self.is_running = False
+        self.is_finish = False # RESULTに遷移するための条件の一つ
         self.game_types = ["dummy", "Report", "Shiritori"]
         self.game_instance = None
         self.game_modes = None
-        self.mode = None
-        self.is_finish = False
 
     def transition(self):
         """キーダウンに応じた状態の遷移"""
@@ -55,26 +54,27 @@ class State:
             if self.state == States.TITLE:  # タイトル画面
                 if event.type == KEYDOWN:
                     if event.key == K_1:  # 開始
-                        self.state = States.TYPE  # 次の画面へ
+                        self.state = States.TYPE  # ゲームタイプ選択へ遷移
                     if event.key == K_2:  # 終了
                         events.quit_game()  # 終了
             elif self.state == States.TYPE:  # ゲームタイプ選択
                 if event.type == KEYDOWN:
-                    if event.key in [K_1, K_2]:  # 開始
+                    if event.key in [K_1, K_2]: # レポート or しりとり
                         cls = getattr(
                             game, self.game_types[int(pygame.key.name(event.key))]
                         )
-                        self.game_instance = cls()
-                        self.game_modes = self.game_instance.get_mode()
-                        self.state = States.MODE
-            elif self.state == States.MODE:
+                        self.game_instance = cls() # 選択されたタイプのインスタンス化
+                        self.game_modes = self.game_instance.get_mode() # モード取得
+                        self.state = States.MODE # モード選択へ遷移
+            elif self.state == States.MODE: # モード選択
                 if event.type == KEYDOWN:
                     if event.key in [K_0, K_1, K_2]:
                         key_name = int(pygame.key.name(event.key))
-                        self.mode = self.game_modes[key_name]
-                        self.state = States.PLAY
-            elif self.state == States.PLAY and self.is_finish:
-                self.state = States.RESULT
+                        mode = self.game_modes[key_name] 
+                        self.game_instance.set_mode(mode) # モードのセット
+                        self.state = States.PLAY # ゲームプレイへ遷移
+            elif self.state == States.PLAY and self.is_finish: # ゲームプレイ画面で、問題が解き終わったら
+                self.state = States.RESULT # リザルトへ遷移
             elif self.state == States.RESULT:
                 if event.type == KEYDOWN:
                     self.is_finish = False
@@ -100,9 +100,6 @@ class Draw(Drawer):
         """
         super().__init__()
         self.user = User("test_user")  # ユーザー定義
-        self.game = None  # ReportもしくはShiritoriのインスタンスを格納する変数
-        self.game_mode = None
-        self.is_running = True  # ゲームループの判定
         pygame.key.stop_text_input()
         self.text = Text()  # Textクラスのインスタンス化
 
@@ -126,28 +123,28 @@ class Draw(Drawer):
         self.make_subheader(subheader_list)
         pygame.display.update()  # 画面更新
 
-    def choose_mode(self) -> None:
+    def choose_mode(self, game_modes) -> None:
         """モード選択画面"""
         pygame.display.set_caption("タイピングゲーム(仮) | Choose")  # キャプション設定
         self.screen.fill(Color.BLACK.rgb)  # ウィンドウを塗りつぶす
         # 画面に表示するテキストの設定
         self.make_header("モード選択")
         mode_list = [
-            '{0}: " {1} "を入力してください'.format(i.value, i.id) for i in self.game_mode
+            '{0}: " {1} "を入力してください'.format(i.value, i.id) for i in game_modes
         ]
         self.make_subheader(mode_list)
         pygame.display.update()  # 画面更新
 
-    def play(self) -> None:
+    def play(self, game_instance) -> None:
         """ゲームプレイ画面"""
         pygame.key.start_text_input()
         pygame.display.set_caption("タイピングゲーム(仮) | Play")  # キャプション設定
-        while not self.game.is_finish():
+        while not game_instance.is_finish():
             self.screen.fill(Color.BLACK.rgb)  # ウィンドウを塗りつぶす
             # 画面に表示するテキストの設定
             self.make_top_left_subheader("時間内に入力せよ")
             self.make_top_right_subheader("00:00")
-            question = self.game.get_word()  # 出題をしてもらう
+            question = game_instance.get_word()  # 出題をしてもらう
 
             used_height = self.make_header(question.word, -80)  # 取得した単語の表示
             description_list = textwrap.wrap(question.describe, 18)  # 18字ごとに区切る
@@ -156,7 +153,7 @@ class Draw(Drawer):
             pygame.display.update()  # 画面更新
             # 文字入力必要な変数
             input_text = self.input_text()
-            judge = self.game.judge_word(input_text)  # 正誤判定
+            judge = game_instance.judge_word(input_text)  # 正誤判定
             if not judge.correct:  # 不正解時
                 # 上書き(塗りつぶし) rect値(x, y, width, height)
                 self.screen.fill(
@@ -167,7 +164,7 @@ class Draw(Drawer):
                 self.make_bottom_subheader(judge.message)
                 pygame.display.update()  # 画面更新
                 sleep(2)  # 不正解時のメッセージを見せるために2秒待機
-        self.user.add_score(self.game.score)  # ユーザーの情報にスコアを追加
+        self.user.add_score(game_instance.score)  # ユーザーの情報にスコアを追加
         pygame.key.stop_text_input()
 
     def input_text(self):

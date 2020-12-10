@@ -59,8 +59,11 @@ class Drawer:
         )
 
     def fill_bottom_subheader(self):
-         """画面中央下を塗りつぶすメソッド"""
-         self.screen.fill(Color.BLACK.rgb,(0.0, float(self.height - 30 * 2), float(self.width), float(30)))
+        """画面中央下を塗りつぶすメソッド"""
+        self.screen.fill(
+            Color.BLACK.rgb,
+            (0.0, float(self.height - 30 * 2), float(self.width), float(30)),
+        )
 
     def text_box(self, text):
         """
@@ -71,9 +74,9 @@ class Drawer:
             (0, 0, 0),
             (
                 0,
-                (600 - text_surface.get_height() * 2),
-                float(800),
-                float(text_surface.get_height()),
+                self.height - text_surface.get_height() * 2,
+                self.width,
+                text_surface.get_height(),
             ),
         )
         self.screen.blit(

@@ -75,7 +75,7 @@ class Drawer:
         self.screen.blit(
             text_surface,
             [
-                ((800 / 2) - (text_surface.get_width() / 2)),
-                (600 - text_surface.get_height() * 2),
+                ((self.width / 2) - (text_surface.get_width() / 2)),
+                (self.height - text_surface.get_height() * 2),
             ],
         )

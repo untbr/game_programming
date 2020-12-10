@@ -87,7 +87,7 @@ class State:
             self.is_running = False
 
 
-class Draw(Drawer):
+class StateDraw(Drawer):
     """
     各画面を状態として捉えて処理を行うクラス
     インスタンス作成後、title→mode→...とメソッドを順次呼び出していく

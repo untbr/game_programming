@@ -1,11 +1,11 @@
-from materials.state import State, Draw, States  # 状態
+from materials.state import State, StateDraw, States  # 状態
 
 
 def main():
     """
     ゲームのサンプル
     """
-    draw = Draw()
+    draw = StateDraw()
     state = State()  # インスタンス作成
     while True:
         state.transition()

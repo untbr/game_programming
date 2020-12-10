@@ -155,11 +155,7 @@ class Draw(Drawer):
 
             pygame.display.update()  # 画面更新
             # 文字入力必要な変数
-            input_text = ""
-            while True:
-                input_text = self.input_text()
-                if input_text:
-                    break
+            input_text = self.input_text()
             judge = self.game.judge_word(input_text)  # 正誤判定
             if not judge.correct:  # 不正解時
                 # 上書き(塗りつぶし) rect値(x, y, width, height)
@@ -175,26 +171,29 @@ class Draw(Drawer):
         pygame.key.stop_text_input()
 
     def input_text(self):
-        for event in pygame.event.get():
-            if event.type == QUIT:
-                events.quit_game()  # 閉じるボタン押下で終了
-            elif event.type == KEYDOWN:
-                if not self.text.is_editing:  # 編集中(全角の変換前)でないとき
-                    if event.key == K_BACKSPACE:  # BS時
-                        self.text_box(self.text.delete())  # 確定した方から削除する
-                    if event.key == K_LEFT:
-                        self.text_box(self.text.move_cursor_left())  # 文字のカーソルを左に動かす
-                    if event.key == K_RIGHT:
-                        self.text_box(self.text.move_cursor_right())  # 文字のカーソルを右に動かす
-                if len(event.unicode) == 0:  # 確定時
-                    if event.key == K_RETURN:
-                        self.text_box("|")  # テキストボックスを空にする
-                        return self.text.enter()  # 確定した文字の取得
-            elif event.type == TEXTEDITING:  # 全角入力するときに必ず真
-                self.text_box(self.text.edit(event.text))
-            elif event.type == TEXTINPUT:  # 半角入力するときに必ず使う(もしくは全角時enter)
-                self.text_box(self.text.input(event.text))
-            pygame.display.update()
+        text = ""
+        while True:
+            for event in pygame.event.get():
+                if event.type == QUIT:
+                    events.quit_game()  # 閉じるボタン押下で終了
+                elif event.type == KEYDOWN:
+                    if not self.text.is_editing:  # 編集中(全角の変換前)でないとき
+                        if event.key == K_BACKSPACE:  # BS時
+                            text = self.text.delete()  # 確定した方から削除する
+                        if event.key == K_LEFT:
+                            text = self.text.move_cursor_left()  # 文字のカーソルを左に動かす
+                        if event.key == K_RIGHT:
+                            text = self.text.move_cursor_right()  # 文字のカーソルを右に動かす
+                    if len(event.unicode) == 0:  # 確定時
+                        if event.key == K_RETURN:
+                            self.text_box("|")  # テキストボックスを空にする
+                            return self.text.enter()  # 確定した文字の取得
+                elif event.type == TEXTEDITING:  # 全角入力するときに必ず真
+                    text = self.text.edit(event.text)
+                elif event.type == TEXTINPUT:  # 半角入力するときに必ず使う(もしくは全角時enter)
+                    text = self.text.input(event.text)
+                self.text_box(text)
+                pygame.display.update()
 
     def result(self):
         """リザルト画面"""

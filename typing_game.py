@@ -12,7 +12,7 @@ def main():
         if not state.is_running:
             if state.state == States.TITLE:
                 draw.title()  # タイトル画面の描画
-            if state.state == States.TYPE:
+            elif state.state == States.TYPE:
                 draw.choose_type()  # ゲームタイプの描画
             elif state.state == States.MODE:
                 draw.choose_mode(state.game_modes)  # ゲームモードの描画

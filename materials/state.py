@@ -38,10 +38,10 @@ class States(Enum):
 
 class State:
     def __init__(self):
-        self.state = States.TITLE
-        self.is_running = False
+        self.state = States.TITLE  # 立ち上げ時はタイトル画面を表示する
+        self.is_running = False  # 状態遷移の有無によって画面の更新をするかどうかに使う
         self.is_finish = False  # RESULTに遷移するための条件の一つ
-        self.game_types = ["dummy", "Report", "Shiritori"]
+        self.game_types = ["dummy", "Report", "Shiritori"]  # ゲームのインスタンス化に使うリスト
         self.game_instance = None
         self.game_modes = None
 
@@ -100,7 +100,7 @@ class StateDraw(Drawer):
         """
         super().__init__()
         self.user = User("test_user")  # ユーザー定義
-        pygame.key.stop_text_input()
+        pygame.key.stop_text_input()  # input, editingを止める
         self.text = Text()  # Textクラスのインスタンス化
 
     def title(self) -> None:
@@ -149,8 +149,7 @@ class StateDraw(Drawer):
             self.make_subheader(description_list, -used_height * 3)  # 取得した説明の表示
 
             pygame.display.update()  # 画面更新
-            # 文字入力必要な変数
-            input_text = self.input_text()
+            input_text = self.input_text()  # 文字入力
             judge = game_instance.judge_word(input_text)  # 正誤判定
             if not judge.correct:  # 不正解時
                 # 上書き(塗りつぶし) rect値(x, y, width, height)

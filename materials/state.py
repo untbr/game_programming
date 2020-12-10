@@ -21,9 +21,69 @@ from .text import Text  # テキスト入力に関するモジュール
 sys.path.append(os.pardir)
 from game.game import Report, Shiritori  # ゲームの処理に関するモジュール
 from game.user import User  # ユーザー情報に関するモジュール
+from enum import Enum
+
+from game import game
 
 
-class State(Drawer):
+class States(Enum):
+    """状態の定義"""
+
+    TITLE = 0  # タイトル画面
+    TYPE = 1  # ゲームモードタイプ選択画面
+    MODE = 2  # ゲームモード選択画面
+    PLAY = 3  # プレイ画面
+    RESULT = 4  # 結果画面
+
+
+class State:
+    def __init__(self):
+        self.state = States.TITLE
+        self.is_running = False
+        self.game_types = ["dummy", "Report", "Shiritori"]
+        self.game_instance = None
+        self.game_modes = None
+        self.mode = None
+        self.is_finish = False
+
+    def transition(self):
+        """キーダウンに応じた状態の遷移"""
+        current_state = self.state
+        for event in pygame.event.get():
+            if event.type == QUIT:  # 閉じるボタン押下
+                events.quit_game()  # 終了
+            if self.state == States.TITLE:  # タイトル画面
+                if event.type == KEYDOWN:
+                    if event.key == K_1:  # 開始
+                        self.state = States.TYPE  # 次の画面へ
+                    if event.key == K_2:  # 終了
+                        events.quit_game()  # 終了
+            elif self.state == States.TYPE:  # ゲームタイプ選択
+                if event.type == KEYDOWN:
+                    if event.key in [K_1, K_2]:  # 開始
+                        cls = getattr(
+                            game, self.game_types[int(pygame.key.name(event.key))]
+                        )
+                        self.game_instance = cls()
+                        self.game_modes = self.game_instance.get_mode()
+                        self.state = States.MODE
+            elif self.state == States.MODE:
+                if event.type == KEYDOWN:
+                    if event.key in [K_0, K_1, K_2]:
+                        key_name = int(pygame.key.name(event.key))
+                        self.mode = self.game_modes[key_name]
+                        self.state = States.PLAY
+            elif self.state == States.PLAY and self.is_finish:
+                self.state = States.RESULT
+            elif self.state == States.RESULT:
+                if event.type == KEYDOWN:
+                    self.state = States.TITLE  # キー入力検知で次の画面へ
+                    self.is_finish = False
+        if current_state != self.state:
+            self.is_running = False
+
+
+class Draw(Drawer):
     """
     各画面を状態として捉えて処理を行うクラス
     インスタンス作成後、title→mode→...とメソッドを順次呼び出していく
@@ -50,19 +110,8 @@ class State(Drawer):
         subheader_list = ['開始: " 1 "を入力してください', '終了: " 2 "を入力してください']
         self.make_subheader(subheader_list)
         pygame.display.update()  # 画面更新
-        self.is_running = True
-        while self.is_running:
-            # イベント処理
-            for event in pygame.event.get():
-                if event.type == QUIT:  # 閉じるボタン押下
-                    events.quit_game()  # 終了
-                if event.type == KEYDOWN:
-                    if event.key == K_1:  # 開始
-                        self.is_running = False  # 次の画面へ
-                    if event.key == K_2:  # 終了
-                        events.quit_game()  # 終了
 
-    def mode(self) -> None:
+    def choose_type(self) -> None:
         """ゲーム選択画面"""
         pygame.display.set_caption("タイピングゲーム(仮) | Mode")  # キャプション設定
         self.screen.fill(Color.BLACK.rgb)  # ウィンドウを塗りつぶす
@@ -71,22 +120,8 @@ class State(Drawer):
         subheader_list = ['レポートゲーム(仮): "1" を入力してください', 'しりとりゲーム(仮): "2"を入力してください']
         self.make_subheader(subheader_list)
         pygame.display.update()  # 画面更新
-        self.is_running = True
-        while self.is_running:
-            # イベント処理
-            for event in pygame.event.get():
-                if event.type == QUIT:
-                    events.quit_game()  # 閉じるボタン押下で終了
-                if event.type == KEYDOWN:
-                    if event.key == K_1:  # 「レポートゲーム(仮)」を選択
-                        self.game = Report()
-                        self.is_running = False
-                    elif event.key == K_2:  # 「しりとりゲーム(仮)」を選択
-                        self.game = Shiritori()
-                        self.is_running = False
-        self.game_mode = self.game.get_mode()  # 難易度(品詞)を取得
 
-    def choose(self) -> None:
+    def choose_mode(self) -> None:
         """モード選択画面"""
         pygame.display.set_caption("タイピングゲーム(仮) | Choose")  # キャプション設定
         self.screen.fill(Color.BLACK.rgb)  # ウィンドウを塗りつぶす
@@ -97,18 +132,6 @@ class State(Drawer):
         ]
         self.make_subheader(mode_list)
         pygame.display.update()  # 画面更新
-
-        self.is_running = True
-        while self.is_running:
-            # イベント処理
-            for event in pygame.event.get():
-                if event.type == QUIT:
-                    events.quit_game()  # 閉じるボタン押下で終了
-                if event.type == KEYDOWN:
-                    if event.key in [K_0, K_1, K_2]:
-                        key_name = int(pygame.key.name(event.key))
-                        self.game.set_mode(self.game_mode[key_name])  # 難易度/品詞の設定
-                        self.is_running = False
 
     def play(self) -> None:
         """ゲームプレイ画面"""
@@ -174,11 +197,3 @@ class State(Drawer):
         self.make_subheader(result)
         self.make_subheader(["Please press any key...".format(0)], 150)
         pygame.display.update()  # 画面更新
-        self.is_running = True
-        while self.is_running:
-            # イベント処理
-            for event in pygame.event.get():
-                if event.type == QUIT:
-                    events.quit_game()  # 閉じるボタン押下で終了
-                if event.type == KEYDOWN:
-                    self.is_running = False  # キー入力検知で次の画面へ

@@ -104,6 +104,7 @@ class Draw(Drawer):
         self.game_mode = None
         self.is_running = True  # ゲームループの判定
         pygame.key.stop_text_input()
+        self.text = Text()  # Textクラスのインスタンス化
 
     def title(self) -> None:
         """タイトル画面"""
@@ -139,6 +140,7 @@ class Draw(Drawer):
 
     def play(self) -> None:
         """ゲームプレイ画面"""
+        pygame.key.start_text_input()
         pygame.display.set_caption("タイピングゲーム(仮) | Play")  # キャプション設定
         while not self.game.is_finish():
             self.screen.fill(Color.BLACK.rgb)  # ウィンドウを塗りつぶす
@@ -152,8 +154,13 @@ class Draw(Drawer):
             self.make_subheader(description_list, -used_height * 3)  # 取得した説明の表示
 
             pygame.display.update()  # 画面更新
-            # 文字入力に必要な変数
-            judge = self.game.judge_word(self.input_text())  # 正誤判定
+            # 文字入力必要な変数
+            input_text = ""
+            while True:
+                input_text = self.input_text()
+                if input_text:
+                    break
+            judge = self.game.judge_word(input_text)  # 正誤判定
             if not judge.correct:  # 不正解時
                 # 上書き(塗りつぶし) rect値(x, y, width, height)
                 self.screen.fill(
@@ -167,28 +174,25 @@ class Draw(Drawer):
         self.user.add_score(self.game.score)  # ユーザーの情報にスコアを追加
 
     def input_text(self):
-        text = Text()  # Textクラスのインスタンス化
-        while True:
-            # イベント処理
-            for event in pygame.event.get():
-                if event.type == QUIT:
-                    events.quit_game()  # 閉じるボタン押下で終了
-                elif event.type == KEYDOWN:
-                    if not text.is_editing:  # 編集中(全角の変換前)でないとき
-                        if event.key == K_BACKSPACE:  # BS時
-                            self.text_box(text.delete())  # 確定した方から削除する
-                        if event.key == K_LEFT:
-                            self.text_box(text.move_cursor_left())  # 文字のカーソルを左に動かす
-                        if event.key == K_RIGHT:
-                            self.text_box(text.move_cursor_right())  # 文字のカーソルを右に動かす
-                    if len(event.unicode) == 0:  # 確定時
-                        if event.key == K_RETURN:
-                            self.text_box("|")  # テキストボックスを空にする
-                            return text.enter()  # 確定した文字の取得
-                elif event.type == TEXTEDITING:  # 全角入力するときに必ず真
-                    self.text_box(text.edit(event.text))
-                elif event.type == TEXTINPUT:  # 半角入力するときに必ず使う(もしくは全角時enter)
-                    self.text_box(text.input(event.text))
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                events.quit_game()  # 閉じるボタン押下で終了
+            elif event.type == KEYDOWN:
+                if not self.text.is_editing:  # 編集中(全角の変換前)でないとき
+                    if event.key == K_BACKSPACE:  # BS時
+                        self.text_box(self.text.delete())  # 確定した方から削除する
+                    if event.key == K_LEFT:
+                        self.text_box(self.text.move_cursor_left())  # 文字のカーソルを左に動かす
+                    if event.key == K_RIGHT:
+                        self.text_box(self.text.move_cursor_right())  # 文字のカーソルを右に動かす
+                if len(event.unicode) == 0:  # 確定時
+                    if event.key == K_RETURN:
+                        self.text_box("|")  # テキストボックスを空にする
+                        return self.text.enter()  # 確定した文字の取得
+            elif event.type == TEXTEDITING:  # 全角入力するときに必ず真
+                self.text_box(self.text.edit(event.text))
+            elif event.type == TEXTINPUT:  # 半角入力するときに必ず使う(もしくは全角時enter)
+                self.text_box(self.text.input(event.text))
             pygame.display.update()
 
     def result(self):

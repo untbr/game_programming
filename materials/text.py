@@ -1,11 +1,7 @@
-import pygame
-
-
 class Text:
     def __init__(self):
         self.text = ["|"]  # 入力されたテキストを格納していく変数
         self.editing = []  # 全角の文字編集中(変換前)の文字を格納するための変数
-        pygame.key.start_text_input()
         self.is_editing = False  # 編集中文字列の有無(全角入力時に使用)
         self.cursor_pos = 0  # 文字入力のカーソル(パイプ|)の位置
 

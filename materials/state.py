@@ -77,8 +77,12 @@ class State:
                 self.state = States.RESULT
             elif self.state == States.RESULT:
                 if event.type == KEYDOWN:
-                    self.state = States.TITLE  # キー入力検知で次の画面へ
                     self.is_finish = False
+                    self.state = States.TITLE  # キー入力検知で次の画面へ
+            if event.type == KEYDOWN:
+                if event.key == K_ESCAPE: # エスケープが押されたら
+                    self.is_finish = False
+                    self.state = States.TITLE
         if current_state != self.state:
             self.is_running = False
 

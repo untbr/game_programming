@@ -153,10 +153,7 @@ class StateDraw(Drawer):
             judge = game_instance.judge_word(input_text)  # 正誤判定
             if not judge.correct:  # 不正解時
                 # 上書き(塗りつぶし) rect値(x, y, width, height)
-                self.screen.fill(
-                    Color.BLACK.rgb,
-                    (0.0, float(self.height - 30 * 2), float(self.width), float(30)),
-                )
+                self.fill_bottom_subheader() # 塗りつぶし
                 pygame.display.update()  # 画面更新
                 self.make_bottom_subheader(judge.message)
                 pygame.display.update()  # 画面更新

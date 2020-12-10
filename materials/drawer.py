@@ -58,6 +58,10 @@ class Drawer:
             text_surface, [align.center(), align.bottom() - text_surface.get_height()]
         )
 
+    def fill_bottom_subheader(self):
+         """画面中央下を塗りつぶすメソッド"""
+         self.screen.fill(Color.BLACK.rgb,(0.0, float(self.height - 30 * 2), float(self.width), float(30)))
+
     def text_box(self, text):
         """
         入力文字を表示するためのメソッド

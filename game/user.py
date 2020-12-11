@@ -13,8 +13,8 @@ class User:
     ゲーム起動中は同じUserインスタンスにスコアを追加していく
     """
 
-    def __init__(self, name: str):
-        self.__name = name
+    def __init__(self):
+        self.__name = ""
         self.__scores: List[Score] = []
 
     def __str__(self):
@@ -32,6 +32,10 @@ class User:
     @property
     def name(self) -> str:
         return self.__name
+
+    @name.setter
+    def name(self, name: str) -> None:
+        self.__name = name
 
     @property
     def scores(self) -> List[Score]:

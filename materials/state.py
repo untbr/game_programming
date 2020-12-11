@@ -99,7 +99,8 @@ class StateDraw(Drawer):
         width: ウィンドウの横幅, height: ウィンドウの縦幅
         """
         super().__init__()
-        self.user = User("test_user")  # ユーザー定義
+        self.user = User()  # ユーザーのインスタンス化
+        self.user.name = "test_user"
         pygame.key.stop_text_input()  # input, editingを止める
         self.text = Text()  # Textクラスのインスタンス化
 

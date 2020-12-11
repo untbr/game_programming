@@ -61,8 +61,6 @@ class State:
                         events.quit_game()  # 終了
             elif self.state == States.USER and event.type == pygame.USEREVENT:
                     self.state = States.TYPE
-            elif self.state == States.USER:
-                self.state = States.TYPE
             elif self.state == States.TYPE:  # ゲームタイプ選択
                 if event.type == KEYDOWN:
                     if event.key in [K_1, K_2]:  # レポート or しりとり

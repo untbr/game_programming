@@ -1,5 +1,3 @@
-import asyncio
-
 from game.user import User
 
 from materials.drawer import StateDraw

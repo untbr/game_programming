@@ -37,8 +37,6 @@ def main():
                 user.add_score(state.game_instance.score)  # ユーザーにスコアを追加する
             elif state.state == States.RESULT:
                 draw.result(user)
-        else:
-            print(state.state)
 
 
 if __name__ == "__main__":

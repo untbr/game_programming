@@ -21,6 +21,14 @@ def main():
         if not state.is_running:
             if state.state == States.TITLE:
                 draw.title()  # タイトル画面の描画
+            elif state.state == States.USER:
+                pygame.key.start_text_input()
+                user_name = draw.register()
+                user.name = user_name
+                # 入力が確定したときにイベントキューに送るイベント
+                event = pygame.event.Event(pygame.USEREVENT)
+                pygame.event.post(event)
+                pygame.key.stop_text_input()
             elif state.state == States.TYPE:
                 draw.choose_type()  # ゲームタイプの描画
             elif state.state == States.MODE:
@@ -41,7 +49,8 @@ def main():
                 pygame.key.stop_text_input()
             elif state.state == States.RESULT:
                 draw.result(user)
-
+        else:
+            print(state.state)    
 
 if __name__ == "__main__":
     main()

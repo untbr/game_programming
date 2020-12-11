@@ -28,10 +28,11 @@ class States(Enum):
     """状態の定義"""
 
     TITLE = 0  # タイトル画面
-    TYPE = 1  # ゲームモードタイプ選択画面
-    MODE = 2  # ゲームモード選択画面
-    PLAY = 3  # プレイ画面
-    RESULT = 4  # 結果画面
+    USER = 1
+    TYPE = 2  # ゲームモードタイプ選択画面
+    MODE = 3  # ゲームモード選択画面
+    PLAY = 4  # プレイ画面
+    RESULT = 5  # 結果画面
 
 
 class State:
@@ -51,9 +52,11 @@ class State:
             if self.state == States.TITLE:  # タイトル画面
                 if event.type == KEYDOWN:
                     if event.key == K_1:  # 開始
-                        self.state = States.TYPE  # ゲームタイプ選択へ遷移
+                        self.state = States.USER  # ゲームタイプ選択へ遷移
                     if event.key == K_2:  # 終了
                         events.quit_game()  # 終了
+            elif self.state == States.USER and event.type == pygame.USEREVENT:
+                self.state = States.TYPE
             elif self.state == States.TYPE:  # ゲームタイプ選択
                 if event.type == KEYDOWN:
                     if event.key in [K_1, K_2]:  # レポート or しりとり
@@ -76,11 +79,9 @@ class State:
                 self.state = States.RESULT  # リザルトへ遷移
             elif self.state == States.RESULT:
                 if event.type == KEYDOWN:
-                    self.is_finish = False
                     self.state = States.TITLE  # キー入力検知で次の画面へ
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:  # エスケープが押されたら
-                    self.is_finish = False
                     self.state = States.TITLE
         if current_state != self.state:
             self.is_running = False
@@ -111,9 +112,16 @@ class StateDraw(Drawer):
         self.make_subheader(subheader_list)
         pygame.display.update()  # 画面更新
 
+    def register(self): 
+        pygame.display.set_caption("タイピングゲーム(仮) | User")  # キャプション設定
+        self.screen.fill(Color.BLACK.rgb)  # ウィンドウを塗りつぶす
+        self.make_subheader(["ユーザー名を入力してください"])
+        pygame.display.update()  # 画面更新
+        return self.input_text()  # 文字入力
+
     def choose_type(self) -> None:
         """ゲーム選択画面"""
-        pygame.display.set_caption("タイピングゲーム(仮) | Mode")  # キャプション設定
+        pygame.display.set_caption("タイピングゲーム(仮) | Type")  # キャプション設定
         self.screen.fill(Color.BLACK.rgb)  # ウィンドウを塗りつぶす
         # 画面に表示するテキストの設定
         self.make_header("ゲーム選択")
@@ -123,7 +131,7 @@ class StateDraw(Drawer):
 
     def choose_mode(self, game_modes) -> None:
         """モード選択画面"""
-        pygame.display.set_caption("タイピングゲーム(仮) | Choose")  # キャプション設定
+        pygame.display.set_caption("タイピングゲーム(仮) | Mode")  # キャプション設定
         self.screen.fill(Color.BLACK.rgb)  # ウィンドウを塗りつぶす
         # 画面に表示するテキストの設定
         self.make_header("モード選択")

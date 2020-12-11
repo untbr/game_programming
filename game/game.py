@@ -190,6 +190,9 @@ class Shiritori(AGame):
             raise Exception("頭文字が設定されていません")
         result = await self.client.shiritori(word, self.head_word)
         correct = result["is_correct"]  # 正誤の判定結果
+        if result["next_head"] == "ん":
+            correct = False
+            result["message"] = "最後が「ん」になっています"
         if correct:
             self.head_word = result["next_head"]  # 正解なら次の頭文字を更新する
             self.score.number_of_corrects += 1  # 正解数を更新する

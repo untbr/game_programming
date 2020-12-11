@@ -13,7 +13,6 @@ def main():
     draw = StateDraw()
     state = State()  # インスタンス作成
     user = User()
-    user.name = "test"
 
     loop = asyncio.get_event_loop()
     while True:
@@ -22,19 +21,14 @@ def main():
             if state.state == States.TITLE:
                 draw.title()  # タイトル画面の描画
             elif state.state == States.USER:
-                pygame.key.start_text_input()
                 user_name = draw.register()
                 user.name = user_name
-                # 入力が確定したときにイベントキューに送るイベント
-                event = pygame.event.Event(pygame.USEREVENT)
-                pygame.event.post(event)
-                pygame.key.stop_text_input()
+                state.exist_user = True
             elif state.state == States.TYPE:
                 draw.choose_type()  # ゲームタイプの描画
             elif state.state == States.MODE:
                 draw.choose_mode(state.game_modes)  # ゲームモードの描画
             elif state.state == States.PLAY:
-                pygame.key.start_text_input()
                 while not state.game_instance.is_finish():
                     # 出題を取得する
                     question = loop.run_until_complete(state.game_instance.get_word())
@@ -46,7 +40,6 @@ def main():
                     if not judge.correct:  # 間違っていたら
                         draw.correct_answer(judge)  # 答えを表示する
                 user.add_score(state.game_instance.score)  # ユーザーにスコアを追加する
-                pygame.key.stop_text_input()
             elif state.state == States.RESULT:
                 draw.result(user)
         else:

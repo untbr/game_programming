@@ -42,6 +42,7 @@ class State:
         self.game_types = ["dummy", "Report", "Shiritori"]  # ゲームのインスタンス化に使うリスト
         self.game_instance = None
         self.game_modes = None
+        self.exist_user = False
 
     def transition(self):
         """キーダウンに応じた状態の遷移"""
@@ -52,10 +53,15 @@ class State:
             if self.state == States.TITLE:  # タイトル画面
                 if event.type == KEYDOWN:
                     if event.key == K_1:  # 開始
-                        self.state = States.USER  # ゲームタイプ選択へ遷移
+                        if not self.exist_user:
+                            self.state = States.USER  # ゲームタイプ選択へ遷移
+                        else:
+                            self.state = States.TYPE
                     if event.key == K_2:  # 終了
                         events.quit_game()  # 終了
             elif self.state == States.USER and event.type == pygame.USEREVENT:
+                    self.state = States.TYPE
+            elif self.state == States.USER:
                 self.state = States.TYPE
             elif self.state == States.TYPE:  # ゲームタイプ選択
                 if event.type == KEYDOWN:
@@ -162,6 +168,7 @@ class StateDraw(Drawer):
         sleep(2)  # 不正解時のメッセージを見せるために2秒待機
 
     def input_text(self):
+        pygame.key.start_text_input()
         text = ""
         while True:
             for event in pygame.event.get():
@@ -178,6 +185,10 @@ class StateDraw(Drawer):
                     if len(event.unicode) == 0:  # 確定時
                         if event.key == K_RETURN:
                             self.text_box("|")  # テキストボックスを空にする
+                            # イベントキューにイベントを送って、入力が確定したことを知らせる
+                            event = pygame.event.Event(pygame.USEREVENT)
+                            pygame.event.post(event)
+                            pygame.key.stop_text_input()
                             return self.text.enter()  # 確定した文字の取得
                 elif event.type == TEXTEDITING:  # 全角入力するときに必ず真
                     text = self.text.edit(event.text)

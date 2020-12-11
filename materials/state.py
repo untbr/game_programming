@@ -9,7 +9,6 @@ import sys
 import textwrap
 import typing
 from time import sleep
-
 import pygame
 from pygame.locals import *  # 定数読み込み
 
@@ -143,12 +142,11 @@ class StateDraw(Drawer):
             # 画面に表示するテキストの設定
             self.make_top_left_subheader("時間内に入力せよ")
             self.make_top_right_subheader("00:00")
-            question = game_instance.get_word()  # 出題をしてもらう
-
+            pygame.display.update()  # 画面更新
+            question = game_instance.get_word()  # 出題をしてもらう 
             used_height = self.make_header(question.word, -80)  # 取得した単語の表示
             description_list = textwrap.wrap(question.describe, 18)  # 18字ごとに区切る
             self.make_subheader(description_list, -used_height * 3)  # 取得した説明の表示
-
             pygame.display.update()  # 画面更新
             input_text = self.input_text()  # 文字入力
             judge = game_instance.judge_word(input_text)  # 正誤判定

@@ -4,7 +4,6 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
 from urllib.request import urlopen
 
-
 class ShiritoriClient:
     # host = "http://127.0.0.1:8000"
     host = "https://game-pbl-shiritori.df.r.appspot.com"

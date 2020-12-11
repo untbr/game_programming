@@ -143,7 +143,7 @@ class StateDraw(Drawer):
         self.make_subheader(mode_list)
         pygame.display.update()  # 画面更新
 
-    def play(self, question) -> None:
+    def play(self, game) -> None:
         """ゲームプレイ画面"""
         pygame.display.set_caption("タイピングゲーム(仮) | Play")  # キャプション設定
         self.screen.fill(Color.BLACK.rgb)  # ウィンドウを塗りつぶす
@@ -151,6 +151,7 @@ class StateDraw(Drawer):
         self.make_top_left_subheader("時間内に入力せよ")
         self.make_top_right_subheader("00:00")
         pygame.display.update()  # 画面更新
+        question = game.get_word()
         used_height = self.make_header(question.word, -80)  # 取得した単語の表示
         description_list = textwrap.wrap(question.describe, 18)  # 18字ごとに区切る
         self.make_subheader(description_list, -used_height * 3)  # 取得した説明の表示

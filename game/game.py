@@ -169,11 +169,11 @@ class Shiritori(AGame):
         self.game_info.mode = game_mode
         self.client.set_mode(game_mode.id)
 
-    async def get_word(self) -> QuestionResponse:
+    def get_word(self) -> QuestionResponse:
         # ゲーム開始時は頭文字が設定されてないので、
         # クライアントを通して取得する
         if not self.head_word:
-            head = await self.client.get_head_word()
+            head = self.client.get_head_word()
             self.head_word = head["next_head"]
         # 上でhead_wordがNoneでないことが保証される
         description = "「{}」で始まる{}を入力してください".format(
@@ -182,13 +182,13 @@ class Shiritori(AGame):
         # QuestionResponseを頭文字とdescriptionでタプルを生成して返す
         return QuestionResponse(self.head_word, description)
 
-    async def judge_word(self, word: str) -> JudgeResponse:
+    def judge_word(self, word: str) -> JudgeResponse:
         """
         判定結果が真ならself.head_wordを設定する
         """
         if self.head_word is None:
             raise Exception("頭文字が設定されていません")
-        result = await self.client.shiritori(word, self.head_word)
+        result = self.client.shiritori(word, self.head_word)
         correct = result["is_correct"]  # 正誤の判定結果
         if result["next_head"] == "ん":
             correct = False
@@ -245,14 +245,14 @@ class Report(AGame):
         word[hole_pos] = "○"
         return "".join(word)
 
-    async def get_word(self) -> QuestionResponse:
+    def get_word(self) -> QuestionResponse:
         """
         self.wordsから単語を返す
         """
         word = self.words[-1]  # 最後の要素
         return QuestionResponse(self.hole(list(word["question"])), word["description"])
 
-    async def judge_word(self, word: str) -> JudgeResponse:
+    def judge_word(self, word: str) -> JudgeResponse:
         """
         入力された単語の正誤を判定する
         正誤にかかわらず、出題されたself.wordsは削除される

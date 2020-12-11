@@ -13,7 +13,7 @@ class ShiritoriClient:
         self.host = ShiritoriClient.host + "/shiritori/"
         self.modes = None  # self.request(self.host + "modes/")
 
-    async def request(self, url: str) -> Any:
+    def request(self, url: str) -> Any:
         """
         urllibを使ってサーバにリクエストするメソッド
         辞書型にして返す
@@ -40,16 +40,14 @@ class ShiritoriClient:
         self.mode = mode
         return True
 
-    async def get_head_word(self) -> Any:
-        return await self.request(self.host + "head_word/")
+    def get_head_word(self) -> Any:
+        return self.request(self.host + "head_word/")
 
     def shiritori(self, word: str, head_word: str) -> Any:
         if head_word is None or len(head_word) != 1:
-            raise ShiritoriClientException("一文字の頭文字が設定できていません")
+            raise Exception("一文字の頭文字が設定できていません")
         data = {"text": word, "head_word": head_word}
-        url = self.host + str(self.mode) + "?" + urlencode(data, encoding="utf-8")
+        url = self.host + str(self.mode) + "?" + urlencode(data)
         return self.request(url)
 
 
-class ShiritoriClientException(Exception):
-    pass

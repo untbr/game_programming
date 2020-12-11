@@ -31,12 +31,9 @@ def main():
             elif state.state == States.PLAY:
                 while not state.game_instance.is_finish():
                     # 出題を取得する
-                    question = loop.run_until_complete(state.game_instance.get_word())
-                    input_text = draw.play(question)  # プレイ画面の描画
+                    input_text = draw.play(state.game_instance)  # プレイ画面の描画
                     # 入力の判定をする
-                    judge = loop.run_until_complete(
-                        state.game_instance.judge_word(input_text)
-                    )
+                    judge = state.game_instance.judge_word(input_text)
                     if not judge.correct:  # 間違っていたら
                         draw.correct_answer(judge)  # 答えを表示する
                 user.add_score(state.game_instance.score)  # ユーザーにスコアを追加する

@@ -21,8 +21,8 @@ def main():
                 draw.title()  # タイトル画面の描画
             elif state.state == States.USER:
                 user_name = draw.register()
-                user.name = user_name # ユーザーインスタンスのnameに名前をセットする
-                state.exist_user = True # 二回目以降のプレイで名前を入力させない
+                user.name = user_name  # ユーザーインスタンスのnameに名前をセットする
+                state.exist_user = True  # 二回目以降のプレイで名前を入力させない
             elif state.state == States.TYPE:
                 draw.choose_type()  # ゲームタイプの描画
             elif state.state == States.MODE:

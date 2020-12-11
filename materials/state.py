@@ -52,15 +52,15 @@ class State:
                 events.quit_game()  # 終了
             if self.state == States.TITLE:  # タイトル画面
                 if event.type == KEYDOWN:
-                    if event.key == K_1:  # 開始
-                        if not self.exist_user:
-                            self.state = States.USER  # ゲームタイプ選択へ遷移
+                    if event.key == K_1:
+                        if self.exist_user:
+                            self.state = States.TYPE  # ゲームタイプ選択へ遷移
                         else:
-                            self.state = States.TYPE
+                            self.state = States.USER  # ユーザー名登録へ遷移
                     if event.key == K_2:  # 終了
                         events.quit_game()  # 終了
             elif self.state == States.USER and event.type == pygame.USEREVENT:
-                    self.state = States.TYPE
+                self.state = States.TYPE
             elif self.state == States.TYPE:  # ゲームタイプ選択
                 if event.type == KEYDOWN:
                     if event.key in [K_1, K_2]:  # レポート or しりとり
@@ -116,7 +116,7 @@ class StateDraw(Drawer):
         self.make_subheader(subheader_list)
         pygame.display.update()  # 画面更新
 
-    def register(self): 
+    def register(self):
         pygame.display.set_caption("タイピングゲーム(仮) | User")  # キャプション設定
         self.screen.fill(Color.BLACK.rgb)  # ウィンドウを塗りつぶす
         self.make_subheader(["ユーザー名を入力してください"])

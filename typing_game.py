@@ -1,7 +1,6 @@
 import asyncio
 
-import pygame
-from materials.state import State, StateDraw, States  # 状態
+from materials.state import State, StateDraw, States
 
 from game.user import User
 
@@ -22,8 +21,8 @@ def main():
                 draw.title()  # タイトル画面の描画
             elif state.state == States.USER:
                 user_name = draw.register()
-                user.name = user_name
-                state.exist_user = True
+                user.name = user_name # ユーザーインスタンスのnameに名前をセットする
+                state.exist_user = True # 二回目以降のプレイで名前を入力させない
             elif state.state == States.TYPE:
                 draw.choose_type()  # ゲームタイプの描画
             elif state.state == States.MODE:
@@ -43,7 +42,8 @@ def main():
             elif state.state == States.RESULT:
                 draw.result(user)
         else:
-            print(state.state)    
+            print(state.state)
+
 
 if __name__ == "__main__":
     main()

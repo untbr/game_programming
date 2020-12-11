@@ -1,17 +1,18 @@
 import asyncio
 
-from materials.state import State, StateDraw, States
-
 from game.user import User
+
+from materials.drawer import StateDraw
+from materials.state import State, States
 
 
 def main():
     """
     ゲームのサンプル
     """
-    draw = StateDraw() # 描画を担当するクラス
-    state = State() # 状態を管理するクラス
-    user = User() # ユーザー情報を管理するクラス
+    draw = StateDraw()  # 描画を担当するクラス
+    state = State()  # 状態を管理するクラス
+    user = User()  # ユーザー情報を管理するクラス
 
     loop = asyncio.get_event_loop()
     while True:

@@ -1,3 +1,4 @@
+import sys
 import textwrap
 from time import sleep
 
@@ -173,7 +174,8 @@ class StateDraw(Drawer):
         while True:
             for event in pygame.event.get():
                 if event.type == QUIT:
-                    events.quit_game()  # 閉じるボタン押下で終了
+                    pygame.quit()  # Pygame終了
+                    sys.exit(0)  # 処理終了
                 elif event.type == KEYDOWN:
                     if not text.is_editing:  # 編集中(全角の変換前)でないとき
                         if event.key == K_BACKSPACE:  # BS時

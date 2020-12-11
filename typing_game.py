@@ -12,7 +12,6 @@ def main():
     state = State()  # 状態を管理するクラス
     user = User()  # ユーザー情報を管理するクラス
 
-    loop = asyncio.get_event_loop()
     while True:
         state.transition()  # キーダウンに応じて状態遷
         if not state.is_running:

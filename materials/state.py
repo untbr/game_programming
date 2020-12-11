@@ -44,7 +44,8 @@ class State:
         current_state = self.state
         for event in pygame.event.get():
             if event.type == QUIT:  # 閉じるボタン押下
-                events.quit_game()  # 終了
+                pygame.quit()  # Pygame終了(ウィンドウを閉じる)
+                sys.exit(0)  # 処理終了
             if self.state == States.TITLE:  # タイトル画面
                 if event.type == KEYDOWN:
                     if event.key == K_1:

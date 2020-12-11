@@ -13,7 +13,7 @@ class ShiritoriClient:
         self.host = ShiritoriClient.host + "/shiritori/"
         self.modes = None  # self.request(self.host + "modes/")
 
-    def request(self, url: str) -> Any:
+    async def request(self, url: str) -> Any:
         """
         urllibを使ってサーバにリクエストするメソッド
         辞書型にして返す
@@ -40,8 +40,8 @@ class ShiritoriClient:
         self.mode = mode
         return True
 
-    def get_head_word(self) -> Any:
-        return self.request(self.host + "head_word/")
+    async def get_head_word(self) -> Any:
+        return await self.request(self.host + "head_word/")
 
     def shiritori(self, word: str, head_word: str) -> Any:
         if head_word is None or len(head_word) != 1:

@@ -8,7 +8,9 @@ import os
 import sys
 import textwrap
 import typing
+from enum import Enum
 from time import sleep
+
 import pygame
 from pygame.locals import *  # 定数読み込み
 
@@ -18,9 +20,6 @@ from .drawer import Drawer
 from .text import Text  # テキスト入力に関するモジュール
 
 sys.path.append(os.pardir)
-from game.game import Report, Shiritori  # ゲームの処理に関するモジュール
-from game.user import User  # ユーザー情報に関するモジュール
-from enum import Enum
 
 from game import game
 
@@ -39,7 +38,6 @@ class State:
     def __init__(self):
         self.state = States.TITLE  # 立ち上げ時はタイトル画面を表示する
         self.is_running = False  # 状態遷移の有無によって画面の更新をするかどうかに使う
-        self.is_finish = False  # RESULTに遷移するための条件の一つ
         self.game_types = ["dummy", "Report", "Shiritori"]  # ゲームのインスタンス化に使うリスト
         self.game_instance = None
         self.game_modes = None
@@ -72,7 +70,9 @@ class State:
                         mode = self.game_modes[key_name]
                         self.game_instance.set_mode(mode)  # モードのセット
                         self.state = States.PLAY  # ゲームプレイへ遷移
-            elif self.state == States.PLAY and self.is_finish:  # ゲームプレイ画面で、問題が解き終わったら
+            elif (
+                self.state == States.PLAY and self.game_instance.is_finish()
+            ):  # ゲームプレイ画面で、問題が解き終わったら
                 self.state = States.RESULT  # リザルトへ遷移
             elif self.state == States.RESULT:
                 if event.type == KEYDOWN:
@@ -98,8 +98,6 @@ class StateDraw(Drawer):
         width: ウィンドウの横幅, height: ウィンドウの縦幅
         """
         super().__init__()
-        self.user = User()  # ユーザーのインスタンス化
-        self.user.name = "test_user"
         pygame.key.stop_text_input()  # input, editingを止める
         self.text = Text()  # Textクラスのインスタンス化
 
@@ -133,32 +131,27 @@ class StateDraw(Drawer):
         self.make_subheader(mode_list)
         pygame.display.update()  # 画面更新
 
-    def play(self, game_instance) -> None:
+    def play(self, question) -> None:
         """ゲームプレイ画面"""
-        pygame.key.start_text_input()
         pygame.display.set_caption("タイピングゲーム(仮) | Play")  # キャプション設定
-        while not game_instance.is_finish():
-            self.screen.fill(Color.BLACK.rgb)  # ウィンドウを塗りつぶす
-            # 画面に表示するテキストの設定
-            self.make_top_left_subheader("時間内に入力せよ")
-            self.make_top_right_subheader("00:00")
-            pygame.display.update()  # 画面更新
-            question = game_instance.get_word()  # 出題をしてもらう 
-            used_height = self.make_header(question.word, -80)  # 取得した単語の表示
-            description_list = textwrap.wrap(question.describe, 18)  # 18字ごとに区切る
-            self.make_subheader(description_list, -used_height * 3)  # 取得した説明の表示
-            pygame.display.update()  # 画面更新
-            input_text = self.input_text()  # 文字入力
-            judge = game_instance.judge_word(input_text)  # 正誤判定
-            if not judge.correct:  # 不正解時
-                # 上書き(塗りつぶし) rect値(x, y, width, height)
-                self.fill_bottom_subheader() # 塗りつぶし
-                pygame.display.update()  # 画面更新
-                self.make_bottom_subheader(judge.message)
-                pygame.display.update()  # 画面更新
-                sleep(2)  # 不正解時のメッセージを見せるために2秒待機
-        self.user.add_score(game_instance.score)  # ユーザーの情報にスコアを追加
-        pygame.key.stop_text_input()
+        self.screen.fill(Color.BLACK.rgb)  # ウィンドウを塗りつぶす
+        # 画面に表示するテキストの設定
+        self.make_top_left_subheader("時間内に入力せよ")
+        self.make_top_right_subheader("00:00")
+        pygame.display.update()  # 画面更新
+        used_height = self.make_header(question.word, -80)  # 取得した単語の表示
+        description_list = textwrap.wrap(question.describe, 18)  # 18字ごとに区切る
+        self.make_subheader(description_list, -used_height * 3)  # 取得した説明の表示
+        pygame.display.update()  # 画面更新
+        return self.input_text()  # 文字入力
+
+    def correct_answer(self, judge):
+        """回答した後、間違っていた際に正解を表示するメソッド"""
+        self.fill_bottom_subheader()  # 塗りつぶし
+        pygame.display.update()  # 画面更新
+        self.make_bottom_subheader(judge.message)
+        pygame.display.update()  # 画面更新
+        sleep(2)  # 不正解時のメッセージを見せるために2秒待機
 
     def input_text(self):
         text = ""
@@ -185,10 +178,10 @@ class StateDraw(Drawer):
                 self.text_box(text)
                 pygame.display.update()
 
-    def result(self):
+    def result(self, user):
         """リザルト画面"""
         pygame.display.set_caption("タイピングゲーム(仮) | Result")  # キャプション設定
-        result = format(self.user).split("\n")
+        result = format(user).split("\n")
         self.screen.fill(Color.BLACK.rgb)  # ウィンドウを塗りつぶす
         self.make_header("リザルト")
         self.make_subheader(result)

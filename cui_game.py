@@ -34,5 +34,6 @@ def main():
 if __name__ == "__main__":
     # ゲーム起動中Userインスタンスは同じものを使う
     # クリア次第、UserのscoresにScoreインスタンスを追加していく
-    user = User("test_user")
+    user = User()
+    user.name = "test_user"
     main()

@@ -55,9 +55,8 @@ class Shiritori:
         features = node.feature.split(",")
         word_class = features[0]
         response = Response(word=word, word_class=word_class, is_correct=False, message="", next_head=head_word)
-
         if len(features) < 7:
-            response.message = "日本語以外が含まれている可能性があります。",
+            response.message = "日本語以外が含まれている可能性があります。"
             return response
 
         word_reading_candicate = features[6]

@@ -9,9 +9,9 @@ def main():
     """
     ゲームのサンプル
     """
-    draw = StateDraw()
-    state = State()  # インスタンス作成
-    user = User()
+    draw = StateDraw() # 描画を担当するクラス
+    state = State() # 状態を管理するクラス
+    user = User() # ユーザー情報を管理するクラス
 
     loop = asyncio.get_event_loop()
     while True:

@@ -8,7 +8,7 @@ class Text:
     def __str__(self):
         return "".join(self.text)
 
-    def edit(self, text):
+    def edit(self, text, editing_cursor_pos):
         """
         edit(編集中)であるときに呼ばれるメソッド
         全角かつ漢字変換前の確定していないときに呼ばれる
@@ -17,14 +17,15 @@ class Text:
             self.is_editing = True  # テキストがあるときはTrue
             for x in text:
                 self.editing.append(x)  # 編集中の文字列を文字として格納していく
+            self.editing.insert(editing_cursor_pos, "|")
             disp = "[" + "".join(self.editing) + "]"
         else:
             self.is_editing = False  # テキストが空の時はFalse
             disp = ""
         self.editing = []  # 次のeditで使うために空にする
-        # カーソルの位置で区切って文字を結合する
+        # self.cursorを読み飛ばして結合する
         return (
-            format(self)[0 : self.cursor_pos] + disp + format(self)[self.cursor_pos :]
+            format(self)[0 : self.cursor_pos] + disp + format(self)[self.cursor_pos+1 :]
         )
 
     def input(self, text):

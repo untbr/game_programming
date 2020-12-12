@@ -170,7 +170,7 @@ class StateDraw(Drawer):
     def input_text(self):
         pygame.key.start_text_input()
         text = Text()  # Textクラスのインスタンス化
-        input_text = ""
+        input_text = "|"
         while True:
             for event in pygame.event.get():
                 if event.type == QUIT:
@@ -186,14 +186,14 @@ class StateDraw(Drawer):
                             input_text = text.move_cursor_right()  # 文字のカーソルを右に動かす
                     if len(event.unicode) == 0:  # 確定時
                         if event.key == K_RETURN:
-                            self.text_box("|")  # テキストボックスを空にする
+                            self.text_box("")
                             # イベントキューにイベントを送って、入力が確定したことを知らせる
                             event = pygame.event.Event(pygame.USEREVENT)
                             pygame.event.post(event)
                             pygame.key.stop_text_input()
                             return text.enter()  # 確定した文字の取得
                 elif event.type == TEXTEDITING:  # 全角入力するときに必ず真
-                    input_text = text.edit(event.text)
+                    input_text = text.edit(event.text, event.start)
                 elif event.type == TEXTINPUT:  # 半角入力するときに必ず使う(もしくは全角時enter)
                     input_text = text.input(event.text)
                 self.text_box(input_text)

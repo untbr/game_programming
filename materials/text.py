@@ -21,7 +21,7 @@ class Text:
             disp = "[" + "".join(self.editing) + "]"
         else:
             self.is_editing = False  # テキストが空の時はFalse
-            disp = ""
+            disp = "|"
         self.editing = []  # 次のeditで使うために空にする
         # self.cursorを読み飛ばして結合する
         return (

@@ -59,7 +59,7 @@ class Drawer:
             if i == focus_index:
                 pygame.draw.rect(
                     self.screen,
-                    (255, 255, 0),
+                    Color.TEAL.rgb,
                     Rect(
                         align.center(),
                         used_height,
@@ -83,9 +83,9 @@ class Drawer:
         align = Align(text_surface, self.width, self.height)
         self.screen.blit(text_surface, [align.right() - 10, align.top() + 10])
 
-    def make_bottom_subheader(self, text):
+    def make_bottom_subheader(self, text, color=Color.RED.rgb):
         """画面中央下に文字を表示するメソッド"""
-        text_surface = self.font_medium.render(text, True, Color.RED.rgb)
+        text_surface = self.font_medium.render(text, True, color)
         align = Align(text_surface, self.width, self.height)
         self.screen.blit(
             text_surface, [align.center(), align.bottom() - text_surface.get_height()]
@@ -276,5 +276,5 @@ class StateDraw(Drawer):
         self.make_header(title)
         self.make_header_outline(title)
         self.make_subheader(result)
-        self.make_subheader(["Please press Enter..."], 150)
+        self.make_bottom_subheader("Please press Enter...", Color.BLUE.rgb)
         pygame.display.update()  # 画面更新

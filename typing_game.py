@@ -47,7 +47,7 @@ def main():
                 user.add_score(game_instance.score)  # ユーザーにスコアを追加する
             elif state.state == States.RESULT:
                 draw.result(user)
-
+            state.is_running = True # 描画済みであることをstateに知らせる
 
 if __name__ == "__main__":
     main()

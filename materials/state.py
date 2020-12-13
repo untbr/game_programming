@@ -48,8 +48,7 @@ class State:
                             else:
                                 self.state = States.USER  # ユーザー名登録へ遷移
                         else:
-                            pygame.quit()
-                            sys.exit(0)
+                            pygame.event.post(pygame.event.Event(QUIT))
             elif self.state == States.USER and event.type == USEREVENT:
                 if event.is_registered:
                     self.exist_user = True

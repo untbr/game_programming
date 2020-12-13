@@ -34,10 +34,9 @@ class State:
     def __init__(self):
         self.state = States.TITLE  # 立ち上げ時はタイトル画面を表示する
         self.is_running = False  # 状態遷移の有無によって画面の更新をするかどうかに使う
-        self.game_types = ["dummy", "Report", "Shiritori"]  # ゲームのインスタンス化に使うリスト
-        self.game_instance = None
-        self.game_modes = None
-        self.exist_user = False
+        self.exist_user = False  # ユーザー名が既に登録されているか
+        self.game_type_key = None
+        self.game_mode_key = None
 
     def transition(self):
         """キーダウンに応じた状態の遷移"""
@@ -56,27 +55,22 @@ class State:
                     if event.key == K_2:  # 終了
                         events.quit_game()  # 終了
             elif self.state == States.USER and event.type == pygame.USEREVENT:
+                self.exist_user = True
                 self.state = States.TYPE
             elif self.state == States.TYPE:  # ゲームタイプ選択
                 if event.type == KEYDOWN:
                     if event.key in [K_1, K_2]:  # レポート or しりとり
-                        cls = getattr(
-                            game, self.game_types[int(pygame.key.name(event.key))]
-                        )
-                        self.game_instance = cls()  # 選択されたタイプのインスタンス化
-                        self.game_modes = self.game_instance.get_mode()  # モード取得
+                        self.game_type_key = int(pygame.key.name(event.key))
                         self.state = States.MODE  # モード選択へ遷移
             elif self.state == States.MODE:  # モード選択
                 if event.type == KEYDOWN:
                     if event.key in [K_0, K_1, K_2]:
-                        key_name = int(pygame.key.name(event.key))
-                        mode = self.game_modes[key_name]
-                        self.game_instance.set_mode(mode)  # モードのセット
+                        self.game_mode_key = int(pygame.key.name(event.key))
                         self.state = States.PLAY  # ゲームプレイへ遷移
-            elif (
-                self.state == States.PLAY and self.game_instance.is_finish()
-            ):  # ゲームプレイ画面で、問題が解き終わったら
-                self.state = States.RESULT  # リザルトへ遷移
+            elif self.state == States.PLAY and event.type == pygame.USEREVENT:
+                # ゲームプレイ画面で、問題が解き終わったら
+                if event.is_finish:
+                    self.state = States.RESULT  # リザルトへ遷移
             elif self.state == States.RESULT:
                 if event.type == KEYDOWN:
                     self.state = States.TITLE  # キー入力検知で次の画面へ

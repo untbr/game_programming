@@ -146,6 +146,11 @@ class StateDraw(Drawer):
 
     def play(self, game) -> None:
         """ゲームプレイ画面"""
+        if game.is_finish():
+            pygame.event.clear()  # input_text()で溜まったイベントを削除
+            # ゲームプレイが終了したことを通知するためのイベント
+            pygame.event.post(pygame.event.Event(pygame.USEREVENT, is_finish=True))
+            return
         pygame.display.set_caption("タイピングゲーム(仮) | Play")  # キャプション設定
         self.screen.fill(Color.BLACK.rgb)  # ウィンドウを塗りつぶす
         # 画面に表示するテキストの設定
@@ -157,15 +162,15 @@ class StateDraw(Drawer):
         description_list = textwrap.wrap(question.describe, 18)  # 18字ごとに区切る
         self.make_subheader(description_list, -used_height * 3)  # 取得した説明の表示
         pygame.display.update()  # 画面更新
-        return self.input_text()  # 文字入力
-
-    def correct_answer(self, judge):
-        """回答した後、間違っていた際に正解を表示するメソッド"""
-        self.fill_bottom_subheader()  # 塗りつぶし
-        pygame.display.update()  # 画面更新
-        self.make_bottom_subheader(judge.message)
-        pygame.display.update()  # 画面更新
-        sleep(2)  # 不正解時のメッセージを見せるために2秒待機
+        input_text = self.input_text()  # 文字入力
+        judge = game.judge_word(input_text)  # 判定
+        if not judge.correct:
+            self.fill_bottom_subheader()  # 塗りつぶし
+            pygame.display.update()  # 画面更新
+            self.make_bottom_subheader(judge.message)
+            pygame.display.update()  # 画面更新
+            sleep(2)  # 不正解時のメッセージを見せるために2秒待機
+        self.play(game)
 
     def input_text(self):
         pygame.key.start_text_input()

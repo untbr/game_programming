@@ -30,6 +30,7 @@ class State:
         self.exist_user = False  # ユーザー名が既に登録されているか
         self.game_type_key = None
         self.game_mode_key = None
+        self.selector = None
 
     def transition(self):
         """キーダウンに応じた状態の遷移"""
@@ -40,26 +41,28 @@ class State:
                 sys.exit(0)  # 処理終了
             if self.state == States.TITLE:  # タイトル画面
                 if event.type == KEYDOWN:
-                    if event.key == K_1:
-                        if self.exist_user:
-                            self.state = States.TYPE  # ゲームタイプ選択へ遷移
+                    if event.key == K_RETURN:
+                        if self.selector.position == 0:
+                            if self.exist_user:
+                                self.state = States.TYPE  # ゲームタイプ選択へ遷移
+                            else:
+                                self.state = States.USER  # ユーザー名登録へ遷移
                         else:
-                            self.state = States.USER  # ユーザー名登録へ遷移
-                    if event.key == K_2:  # 終了
-                        events.quit_game()  # 終了
+                            pygame.quit()
+                            sys.exit(0)
             elif self.state == States.USER and event.type == USEREVENT:
                 if event.is_registered:
                     self.exist_user = True
                     self.state = States.TYPE
             elif self.state == States.TYPE:  # ゲームタイプ選択
                 if event.type == KEYDOWN:
-                    if event.key in [K_1, K_2]:  # レポート or しりとり
-                        self.game_type_key = int(pygame.key.name(event.key))
+                    if event.key == K_RETURN:
+                        self.game_type_key = self.selector.position
                         self.state = States.MODE  # モード選択へ遷移
             elif self.state == States.MODE:  # モード選択
                 if event.type == KEYDOWN:
-                    if event.key in [K_0, K_1, K_2]:
-                        self.game_mode_key = int(pygame.key.name(event.key))
+                    if event.key == K_RETURN:
+                        self.game_mode_key = self.selector.position
                         self.state = States.PLAY  # ゲームプレイへ遷移
             elif self.state == States.PLAY and event.type == USEREVENT:
                 # ゲームプレイ画面で、問題が解き終わったら
@@ -67,9 +70,18 @@ class State:
                     self.state = States.RESULT  # リザルトへ遷移
             elif self.state == States.RESULT:
                 if event.type == KEYDOWN:
-                    self.state = States.TITLE  # キー入力検知で次の画面へ
-            if event.type == KEYDOWN:
-                if event.key == K_ESCAPE:  # エスケープが押されたら
-                    self.state = States.TITLE
-        if current_state != self.state: # 上記で状態遷移されたら
+                    if event.key == K_RETURN:
+                        self.state = States.TITLE  # キー入力検知で次の画面へ
+            if (
+                self.state in [States.TITLE, States.TYPE, States.MODE]
+                and event.type == KEYDOWN
+            ):
+                if event.key == K_DOWN:  # 下矢印キーが押されたら
+                    self.selector.down()
+                    self.is_running = False
+                elif event.key == K_UP:  # 上矢印が押されたら
+                    self.selector.up()
+                    self.is_running = False
+        if current_state != self.state:  # 上記で状態遷移されたら
             self.is_running = False
+            self.selector = None

@@ -30,7 +30,24 @@ class Drawer:
         self.screen.blit(text_surface, [align.center(), used_height])
         return used_height
 
-    def make_subheader(self, text_list, height_correction=0):
+    def make_header_outline(self, text):
+        text_surface = self.font_large.render(text, True, Color.WHITE.rgb)
+        align = Align(text_surface, self.width, self.height)
+        top_start_pos = (100, 100)
+        top_end_pos = (700, 100)
+        bottom_start_pos = (100, 220)
+        bottom_end_pos = (700, 220)
+        pygame.draw.line(self.screen, (255, 255, 255), top_start_pos, top_end_pos)
+        pygame.draw.line(self.screen, (255, 255, 255), bottom_start_pos, bottom_end_pos)
+
+    def make_header_underline(self, text):
+        text_surface = self.font_large.render(text, True, Color.WHITE.rgb)
+        align = Align(text_surface, self.width, self.height)
+        start_pos = (100, 110)
+        end_pos = (700, 110)
+        pygame.draw.line(self.screen, (255, 255, 255), start_pos, end_pos)
+
+    def make_subheader(self, text_list, height_correction=0, focus_index=None):
         """
         小見出しを表示するためのメソッド
         各小見出しをリストで貰う
@@ -39,6 +56,17 @@ class Drawer:
             text_surface = self.font_medium.render(text, True, Color.WHITE.rgb)
             align = Align(text_surface, self.width, self.height)
             used_height = align.middle() + text_surface.get_height() * i
+            if i == focus_index:
+                pygame.draw.rect(
+                    self.screen,
+                    (255, 255, 0),
+                    Rect(
+                        align.center(),
+                        used_height,
+                        text_surface.get_width(),
+                        text_surface.get_height(),
+                    ),
+                )
             self.screen.blit(
                 text_surface, [align.center(), used_height + height_correction]
             )
@@ -93,6 +121,32 @@ class Drawer:
         )
 
 
+class FocusSelector:
+    """
+    選択をする際に、小見出しのフォーカスする位置を決めるためのクラス
+    """
+
+    def __init__(self, length_of_list):
+        self.length_of_list = length_of_list - 1
+        self.focus_pos = 0
+
+    def down(self):
+        # リスト長よりself.focus_posが大きくならないようにする
+        if self.focus_pos < self.length_of_list:
+            self.focus_pos += 1
+        return self.focus_pos
+
+    def up(self):
+        # self.focus_posが0より小さくならないようにする
+        if self.focus_pos > 0:
+            self.focus_pos -= 1
+        return self.focus_pos
+
+    @property
+    def position(self):
+        return self.focus_pos
+
+
 class StateDraw(Drawer):
     """
     各画面を状態として捉えて処理を行うクラス
@@ -107,44 +161,53 @@ class StateDraw(Drawer):
         super().__init__()
         pygame.key.stop_text_input()  # input, editingを止める
 
-    def title(self) -> None:
+    def title(self, focus_index=0) -> None:
         """タイトル画面"""
+        # print("a")
         pygame.display.set_caption("タイピングゲーム(仮) | Title")  # キャプション設定
         self.screen.fill(Color.BLACK.rgb)  # ウィンドウを塗りつぶす
         # 画面に表示するテキストの設定
-        self.make_header("タイピングゲーム(仮)")
-        subheader_list = ['開始: " 1 "を入力してください', '終了: " 2 "を入力してください']
-        self.make_subheader(subheader_list)
+        title = "タイピングゲーム(仮)"
+        self.make_header(title)
+        self.make_header_outline(title)
+        subheader_list = ["開始", "終了"]
+        self.make_subheader(subheader_list, 0, focus_index)
         pygame.display.update()  # 画面更新
 
     def register(self):
         pygame.display.set_caption("タイピングゲーム(仮) | User")  # キャプション設定
         self.screen.fill(Color.BLACK.rgb)  # ウィンドウを塗りつぶす
-        self.make_subheader(["ユーザー名を入力してください"])
+        title = "ユーザー名入力"
+        self.make_header(title)
+        self.make_header_outline(title)
         pygame.display.update()  # 画面更新
         user_name = self.input_text()  # 文字入力
         # 状態遷移を確実にするためにイベント処理に通知する
         pygame.event.post(pygame.event.Event(pygame.USEREVENT, is_registered=True))
         return user_name
 
-    def choose_type(self) -> None:
+    def choose_type(self, focus_index=0) -> None:
         """ゲーム選択画面"""
         pygame.display.set_caption("タイピングゲーム(仮) | Type")  # キャプション設定
         self.screen.fill(Color.BLACK.rgb)  # ウィンドウを塗りつぶす
         # 画面に表示するテキストの設定
-        self.make_header("ゲーム選択")
+        title = "ゲーム選択"
+        self.make_header(title)
+        self.make_header_outline(title)
         subheader_list = ['レポートゲーム(仮): "1" を入力してください', 'しりとりゲーム(仮): "2"を入力してください']
-        self.make_subheader(subheader_list)
+        self.make_subheader(subheader_list, 0, focus_index)
         pygame.display.update()  # 画面更新
 
-    def choose_mode(self, game_modes) -> None:
+    def choose_mode(self, game_modes, focus_index=0) -> None:
         """モード選択画面"""
         pygame.display.set_caption("タイピングゲーム(仮) | Mode")  # キャプション設定
         self.screen.fill(Color.BLACK.rgb)  # ウィンドウを塗りつぶす
         # 画面に表示するテキストの設定
-        self.make_header("モード選択")
+        title = "モード選択"
+        self.make_header(title)
+        self.make_header_outline(title)
         mode_list = ['{0}: " {1} "を入力してください'.format(i.value, i.id) for i in game_modes]
-        self.make_subheader(mode_list)
+        self.make_subheader(mode_list, 0, focus_index)
         pygame.display.update()  # 画面更新
 
     def play(self, game) -> None:
@@ -163,6 +226,7 @@ class StateDraw(Drawer):
         used_height = self.make_header(question.word, -80)  # 取得した単語の表示
         description_list = textwrap.wrap(question.describe, 18)  # 18字ごとに区切る
         self.make_subheader(description_list, -used_height * 3)  # 取得した説明の表示
+        self.make_header_underline(question.word)
         pygame.display.update()  # 画面更新
         input_text = self.input_text()  # 文字入力
         judge = game.judge_word(input_text)  # 判定
@@ -208,7 +272,9 @@ class StateDraw(Drawer):
         pygame.display.set_caption("タイピングゲーム(仮) | Result")  # キャプション設定
         result = format(user).split("\n")
         self.screen.fill(Color.BLACK.rgb)  # ウィンドウを塗りつぶす
-        self.make_header("リザルト")
+        title = "リザルト"
+        self.make_header(title)
+        self.make_header_outline(title)
         self.make_subheader(result)
-        self.make_subheader(["Please press any key...".format(0)], 150)
+        self.make_subheader(["Please press Enter...".format(0)], 150)
         pygame.display.update()  # 画面更新

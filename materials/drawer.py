@@ -30,21 +30,14 @@ class Drawer:
         self.screen.blit(text_surface, [align.center(), used_height])
         return used_height
 
-    def make_header_outline(self, text):
-        text_surface = self.font_large.render(text, True, Color.BLUE.rgb)
-        align = Align(text_surface, self.width, self.height)
-        top_start_pos = (100, 100)
-        top_end_pos = (700, 100)
-        bottom_start_pos = (100, 220)
-        bottom_end_pos = (700, 220)
+    def make_header_outline(self):
+        top_start_pos, top_end_pos = (100, 100), (700, 100)
+        bottom_start_pos, bottom_end_pos = (100, 220), (700, 220)
         pygame.draw.line(self.screen, Color.BLUE.rgb, top_start_pos, top_end_pos)
         pygame.draw.line(self.screen, Color.BLUE.rgb, bottom_start_pos, bottom_end_pos)
 
-    def make_header_underline(self, text):
-        text_surface = self.font_large.render(text, True, Color.BLACK.rgb)
-        align = Align(text_surface, self.width, self.height)
-        start_pos = (100, 110)
-        end_pos = (700, 110)
+    def make_header_underline(self):
+        start_pos, end_pos = (100, 110), (700, 110)
         pygame.draw.line(self.screen, Color.BLACK.rgb, start_pos, end_pos)
 
     def make_subheader(self, text_list, height_correction=0, focus_index=None):
@@ -169,7 +162,7 @@ class StateDraw(Drawer):
         # 画面に表示するテキストの設定
         title = "タイピングゲーム(仮)"
         self.make_header(title)
-        self.make_header_outline(title)
+        self.make_header_outline()
         subheader_list = ["開始", "終了"]
         self.make_subheader(subheader_list, 0, focus_index)
         pygame.display.update()  # 画面更新
@@ -179,7 +172,7 @@ class StateDraw(Drawer):
         self.screen.fill(Color.WAKATAKE.rgb)  # ウィンドウを塗りつぶす
         title = "ユーザー名入力"
         self.make_header(title)
-        self.make_header_outline(title)
+        self.make_header_outline()
         pygame.display.update()  # 画面更新
         user_name = self.input_text()  # 文字入力
         # 状態遷移を確実にするためにイベント処理に通知する
@@ -193,7 +186,7 @@ class StateDraw(Drawer):
         # 画面に表示するテキストの設定
         title = "ゲーム選択"
         self.make_header(title)
-        self.make_header_outline(title)
+        self.make_header_outline()
         subheader_list = ["レポートゲーム(仮)", "しりとりゲーム(仮)"]
         self.make_subheader(subheader_list, 0, focus_index)
         pygame.display.update()  # 画面更新
@@ -205,7 +198,7 @@ class StateDraw(Drawer):
         # 画面に表示するテキストの設定
         title = "モード選択"
         self.make_header(title)
-        self.make_header_outline(title)
+        self.make_header_outline()
         mode_list = [str(i.value) for i in game_modes]
         self.make_subheader(mode_list, 0, focus_index)
         pygame.display.update()  # 画面更新
@@ -226,7 +219,7 @@ class StateDraw(Drawer):
         used_height = self.make_header(question.word, -80)  # 取得した単語の表示
         description_list = textwrap.wrap(question.describe, 18)  # 18字ごとに区切る
         self.make_subheader(description_list, -used_height * 3)  # 取得した説明の表示
-        self.make_header_underline(question.word)
+        self.make_header_underline()
         pygame.display.update()  # 画面更新
         input_text = self.input_text()  # 文字入力
         judge = game.judge_word(input_text)  # 判定
@@ -274,7 +267,7 @@ class StateDraw(Drawer):
         self.screen.fill(Color.WAKATAKE.rgb)  # ウィンドウを塗りつぶす
         title = "リザルト"
         self.make_header(title)
-        self.make_header_outline(title)
+        self.make_header_outline()
         self.make_subheader(result)
         self.make_bottom_subheader("Please press Enter...", Color.BLUE.rgb)
         pygame.display.update()  # 画面更新

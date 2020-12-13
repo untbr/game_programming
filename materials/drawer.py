@@ -154,7 +154,7 @@ class StateDraw(Drawer):
         super().__init__()
         pygame.key.stop_text_input()  # input, editingを止める
 
-    def title(self, focus_index=0) -> None:
+    def title(self, focus_index) -> None:
         """タイトル画面"""
         # print("a")
         pygame.display.set_caption("タイピングゲーム(仮) | Title")  # キャプション設定
@@ -165,6 +165,7 @@ class StateDraw(Drawer):
         self.make_header_outline()
         subheader_list = ["開始", "終了"]
         self.make_subheader(subheader_list, 0, focus_index)
+        # Presents for: untbr(グループ1)
         pygame.display.update()  # 画面更新
 
     def register(self):
@@ -179,7 +180,7 @@ class StateDraw(Drawer):
         pygame.event.post(pygame.event.Event(pygame.USEREVENT, is_registered=True))
         return user_name
 
-    def choose_type(self, focus_index=0) -> None:
+    def choose_type(self, focus_index) -> None:
         """ゲーム選択画面"""
         pygame.display.set_caption("タイピングゲーム(仮) | Type")  # キャプション設定
         self.screen.fill(Color.WAKATAKE.rgb)  # ウィンドウを塗りつぶす
@@ -191,7 +192,7 @@ class StateDraw(Drawer):
         self.make_subheader(subheader_list, 0, focus_index)
         pygame.display.update()  # 画面更新
 
-    def choose_mode(self, game_modes, focus_index=0) -> None:
+    def choose_mode(self, game_modes, focus_index) -> None:
         """モード選択画面"""
         pygame.display.set_caption("タイピングゲーム(仮) | Mode")  # キャプション設定
         self.screen.fill(Color.WAKATAKE.rgb)  # ウィンドウを塗りつぶす
@@ -212,7 +213,7 @@ class StateDraw(Drawer):
         pygame.display.set_caption("タイピングゲーム(仮) | Play")  # キャプション設定
         self.screen.fill(Color.WAKATAKE.rgb)  # ウィンドウを塗りつぶす
         # 画面に表示するテキストの設定
-        self.make_top_left_subheader("時間内に入力せよ")
+        self.make_top_left_subheader(format(game))
         self.make_top_right_subheader("00:00")
         pygame.display.update()  # 画面更新
         question = game.get_word()

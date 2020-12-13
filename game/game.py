@@ -165,6 +165,9 @@ class Shiritori(AGame):
         self.client = ShiritoriClient()
         self.head_word = ""  # 頭文字に使う変数
 
+    def __str__(self):
+        return "しりとりゲーム: " + self.game_info.mode.value
+
     def set_mode(self, game_mode: Mode) -> None:
         self.game_info.mode = game_mode
         self.client.set_mode(game_mode.id)
@@ -210,6 +213,9 @@ class Report(AGame):
         super().__init__(ReportType)
         self.words: List[Dict[str, str]] = []  # 出題する問題を格納するリスト
         self.file_path = os.path.dirname(__file__) + "/words.csv"
+
+    def __str__(self):
+        return "レポートゲームゲーム: " + self.game_info.mode.value
 
     def set_mode(self, game_mode: Mode) -> None:
         """

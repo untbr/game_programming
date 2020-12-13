@@ -122,7 +122,10 @@ class StateDraw(Drawer):
         self.screen.fill(Color.BLACK.rgb)  # ウィンドウを塗りつぶす
         self.make_subheader(["ユーザー名を入力してください"])
         pygame.display.update()  # 画面更新
-        return self.input_text()  # 文字入力
+        user_name = self.input_text()  # 文字入力
+        # 状態遷移を確実にするためにイベント処理に通知する
+        pygame.event.post(pygame.event.Event(pygame.USEREVENT, is_registered=True))
+        return user_name
 
     def choose_type(self) -> None:
         """ゲーム選択画面"""
@@ -147,8 +150,7 @@ class StateDraw(Drawer):
     def play(self, game) -> None:
         """ゲームプレイ画面"""
         if game.is_finish():
-            pygame.event.clear()  # input_text()で溜まったイベントを削除
-            # ゲームプレイが終了したことを通知するためのイベント
+            # 状態遷移を確実にするためにイベント処理に通知する
             pygame.event.post(pygame.event.Event(pygame.USEREVENT, is_finish=True))
             return
         pygame.display.set_caption("タイピングゲーム(仮) | Play")  # キャプション設定
@@ -192,9 +194,6 @@ class StateDraw(Drawer):
                     if len(event.unicode) == 0:  # 確定時
                         if event.key == K_RETURN:
                             self.text_box("")
-                            # イベントキューにイベントを送って、入力が確定したことを知らせる
-                            event = pygame.event.Event(pygame.USEREVENT)
-                            pygame.event.post(event)
                             pygame.key.stop_text_input()
                             return text.enter()  # 確定した文字の取得
                 elif event.type == TEXTEDITING:  # 全角入力するときに必ず真

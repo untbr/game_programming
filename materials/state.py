@@ -54,9 +54,10 @@ class State:
                             self.state = States.USER  # ユーザー名登録へ遷移
                     if event.key == K_2:  # 終了
                         events.quit_game()  # 終了
-            elif self.state == States.USER and event.type == pygame.USEREVENT:
-                self.exist_user = True
-                self.state = States.TYPE
+            elif self.state == States.USER and event.type == USEREVENT:
+                if event.is_registered:
+                    self.exist_user = True
+                    self.state = States.TYPE
             elif self.state == States.TYPE:  # ゲームタイプ選択
                 if event.type == KEYDOWN:
                     if event.key in [K_1, K_2]:  # レポート or しりとり
@@ -67,7 +68,7 @@ class State:
                     if event.key in [K_0, K_1, K_2]:
                         self.game_mode_key = int(pygame.key.name(event.key))
                         self.state = States.PLAY  # ゲームプレイへ遷移
-            elif self.state == States.PLAY and event.type == pygame.USEREVENT:
+            elif self.state == States.PLAY and event.type == USEREVENT:
                 # ゲームプレイ画面で、問題が解き終わったら
                 if event.is_finish:
                     self.state = States.RESULT  # リザルトへ遷移

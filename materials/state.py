@@ -4,19 +4,12 @@
 """
 
 
-import os
 import sys
 import typing
 from enum import Enum
 
 import pygame
 from pygame.locals import *  # 定数読み込み
-
-from . import events  # イベント処理に関するモジュール
-
-sys.path.append(os.pardir)
-
-from game import game
 
 
 class States(Enum):
@@ -78,5 +71,5 @@ class State:
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:  # エスケープが押されたら
                     self.state = States.TITLE
-        if current_state != self.state:
+        if current_state != self.state: # 上記で状態遷移されたら
             self.is_running = False

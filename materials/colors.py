@@ -30,6 +30,7 @@ class Color(Enum):
     NAVY = (0, 0, 128)  # color code: 000080
     FUCHSIA = (255, 0, 255)  # color code: ff00ff
     PURPLE = (128, 0, 128)  # color code: 800080
+    WAKATAKE = (112, 225, 112)
 
     @property
     def rgb(self) -> tuple:

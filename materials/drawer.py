@@ -24,28 +24,28 @@ class Drawer:
         ヘッダーを表示するメソッド
         height_correctionで表示するy座標を補正できる
         """
-        text_surface = self.font_large.render(text, True, Color.WHITE.rgb)
+        text_surface = self.font_large.render(text, True, Color.BLACK.rgb)
         align = Align(text_surface, self.width, self.height)
         used_height = height_correction + align.middle() - text_surface.get_height() * 2
         self.screen.blit(text_surface, [align.center(), used_height])
         return used_height
 
     def make_header_outline(self, text):
-        text_surface = self.font_large.render(text, True, Color.WHITE.rgb)
+        text_surface = self.font_large.render(text, True, Color.BLUE.rgb)
         align = Align(text_surface, self.width, self.height)
         top_start_pos = (100, 100)
         top_end_pos = (700, 100)
         bottom_start_pos = (100, 220)
         bottom_end_pos = (700, 220)
-        pygame.draw.line(self.screen, (255, 255, 255), top_start_pos, top_end_pos)
-        pygame.draw.line(self.screen, (255, 255, 255), bottom_start_pos, bottom_end_pos)
+        pygame.draw.line(self.screen, Color.BLUE.rgb, top_start_pos, top_end_pos)
+        pygame.draw.line(self.screen, Color.BLUE.rgb, bottom_start_pos, bottom_end_pos)
 
     def make_header_underline(self, text):
-        text_surface = self.font_large.render(text, True, Color.WHITE.rgb)
+        text_surface = self.font_large.render(text, True, Color.BLACK.rgb)
         align = Align(text_surface, self.width, self.height)
         start_pos = (100, 110)
         end_pos = (700, 110)
-        pygame.draw.line(self.screen, (255, 255, 255), start_pos, end_pos)
+        pygame.draw.line(self.screen, Color.BLACK.rgb, start_pos, end_pos)
 
     def make_subheader(self, text_list, height_correction=0, focus_index=None):
         """
@@ -53,7 +53,7 @@ class Drawer:
         各小見出しをリストで貰う
         """
         for i, text in enumerate(text_list):
-            text_surface = self.font_medium.render(text, True, Color.WHITE.rgb)
+            text_surface = self.font_medium.render(text, True, Color.BLACK.rgb)
             align = Align(text_surface, self.width, self.height)
             used_height = align.middle() + text_surface.get_height() * i
             if i == focus_index:
@@ -73,13 +73,13 @@ class Drawer:
 
     def make_top_left_subheader(self, text):
         """画面右上に文字を表示するメソッド"""
-        text_surface = self.font_medium.render(text, True, Color.WHITE.rgb)
+        text_surface = self.font_medium.render(text, True, Color.BLACK.rgb)
         align = Align(text_surface, self.width, self.height)
         self.screen.blit(text_surface, [align.left() + 10, align.top() + 10])
 
     def make_top_right_subheader(self, text):
         """画面左上に文字を表示するメソッド"""
-        text_surface = self.font_medium.render(text, True, Color.WHITE.rgb)
+        text_surface = self.font_medium.render(text, True, Color.BLACK.rgb)
         align = Align(text_surface, self.width, self.height)
         self.screen.blit(text_surface, [align.right() - 10, align.top() + 10])
 
@@ -94,7 +94,7 @@ class Drawer:
     def fill_bottom_subheader(self):
         """画面中央下を塗りつぶすメソッド"""
         self.screen.fill(
-            Color.BLACK.rgb,
+            Color.WAKATAKE.rgb,
             (0.0, float(self.height - 30 * 2), float(self.width), float(30)),
         )
 
@@ -102,9 +102,9 @@ class Drawer:
         """
         入力文字を表示するためのメソッド
         """
-        text_surface = self.font_medium.render(text, True, (255, 255, 255))
+        text_surface = self.font_medium.render(text, True, Color.BLACK.rgb)
         self.screen.fill(
-            (0, 0, 0),
+            Color.WAKATAKE.rgb,
             (
                 0,
                 self.height - text_surface.get_height() * 2,
@@ -165,7 +165,7 @@ class StateDraw(Drawer):
         """タイトル画面"""
         # print("a")
         pygame.display.set_caption("タイピングゲーム(仮) | Title")  # キャプション設定
-        self.screen.fill(Color.BLACK.rgb)  # ウィンドウを塗りつぶす
+        self.screen.fill(Color.WAKATAKE.rgb)  # ウィンドウを塗りつぶす
         # 画面に表示するテキストの設定
         title = "タイピングゲーム(仮)"
         self.make_header(title)
@@ -176,7 +176,7 @@ class StateDraw(Drawer):
 
     def register(self):
         pygame.display.set_caption("タイピングゲーム(仮) | User")  # キャプション設定
-        self.screen.fill(Color.BLACK.rgb)  # ウィンドウを塗りつぶす
+        self.screen.fill(Color.WAKATAKE.rgb)  # ウィンドウを塗りつぶす
         title = "ユーザー名入力"
         self.make_header(title)
         self.make_header_outline(title)
@@ -189,24 +189,24 @@ class StateDraw(Drawer):
     def choose_type(self, focus_index=0) -> None:
         """ゲーム選択画面"""
         pygame.display.set_caption("タイピングゲーム(仮) | Type")  # キャプション設定
-        self.screen.fill(Color.BLACK.rgb)  # ウィンドウを塗りつぶす
+        self.screen.fill(Color.WAKATAKE.rgb)  # ウィンドウを塗りつぶす
         # 画面に表示するテキストの設定
         title = "ゲーム選択"
         self.make_header(title)
         self.make_header_outline(title)
-        subheader_list = ['レポートゲーム(仮): "1" を入力してください', 'しりとりゲーム(仮): "2"を入力してください']
+        subheader_list = ["レポートゲーム(仮)", "しりとりゲーム(仮)"]
         self.make_subheader(subheader_list, 0, focus_index)
         pygame.display.update()  # 画面更新
 
     def choose_mode(self, game_modes, focus_index=0) -> None:
         """モード選択画面"""
         pygame.display.set_caption("タイピングゲーム(仮) | Mode")  # キャプション設定
-        self.screen.fill(Color.BLACK.rgb)  # ウィンドウを塗りつぶす
+        self.screen.fill(Color.WAKATAKE.rgb)  # ウィンドウを塗りつぶす
         # 画面に表示するテキストの設定
         title = "モード選択"
         self.make_header(title)
         self.make_header_outline(title)
-        mode_list = ['{0}: " {1} "を入力してください'.format(i.value, i.id) for i in game_modes]
+        mode_list = [str(i.value) for i in game_modes]
         self.make_subheader(mode_list, 0, focus_index)
         pygame.display.update()  # 画面更新
 
@@ -217,7 +217,7 @@ class StateDraw(Drawer):
             pygame.event.post(pygame.event.Event(pygame.USEREVENT, is_finish=True))
             return
         pygame.display.set_caption("タイピングゲーム(仮) | Play")  # キャプション設定
-        self.screen.fill(Color.BLACK.rgb)  # ウィンドウを塗りつぶす
+        self.screen.fill(Color.WAKATAKE.rgb)  # ウィンドウを塗りつぶす
         # 画面に表示するテキストの設定
         self.make_top_left_subheader("時間内に入力せよ")
         self.make_top_right_subheader("00:00")
@@ -271,10 +271,10 @@ class StateDraw(Drawer):
         """リザルト画面"""
         pygame.display.set_caption("タイピングゲーム(仮) | Result")  # キャプション設定
         result = format(user).split("\n")
-        self.screen.fill(Color.BLACK.rgb)  # ウィンドウを塗りつぶす
+        self.screen.fill(Color.WAKATAKE.rgb)  # ウィンドウを塗りつぶす
         title = "リザルト"
         self.make_header(title)
         self.make_header_outline(title)
         self.make_subheader(result)
-        self.make_subheader(["Please press Enter...".format(0)], 150)
+        self.make_subheader(["Please press Enter..."], 150)
         pygame.display.update()  # 画面更新

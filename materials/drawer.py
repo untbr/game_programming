@@ -114,32 +114,6 @@ class Drawer:
         )
 
 
-class FocusSelector:
-    """
-    選択をする際に、小見出しのフォーカスする位置を決めるためのクラス
-    """
-
-    def __init__(self, length_of_list):
-        self.length_of_list = length_of_list - 1
-        self.focus_pos = 0
-
-    def down(self):
-        # リスト長よりself.focus_posが大きくならないようにする
-        if self.focus_pos < self.length_of_list:
-            self.focus_pos += 1
-        return self.focus_pos
-
-    def up(self):
-        # self.focus_posが0より小さくならないようにする
-        if self.focus_pos > 0:
-            self.focus_pos -= 1
-        return self.focus_pos
-
-    @property
-    def position(self):
-        return self.focus_pos
-
-
 class StateDraw(Drawer):
     """
     各画面を状態として捉えて処理を行うクラス
@@ -176,8 +150,7 @@ class StateDraw(Drawer):
         self.make_header_outline()
         pygame.display.update()  # 画面更新
         user_name = self.input_text()  # 文字入力
-        # 状態遷移を確実にするためにイベント処理に通知する
-        pygame.event.post(pygame.event.Event(pygame.USEREVENT, is_registered=True))
+        pygame.event.post(pygame.event.Event(USEREVENT))
         return user_name
 
     def choose_type(self, focus_index) -> None:
@@ -207,8 +180,7 @@ class StateDraw(Drawer):
     def play(self, game) -> None:
         """ゲームプレイ画面"""
         if game.is_finish():
-            # 状態遷移を確実にするためにイベント処理に通知する
-            pygame.event.post(pygame.event.Event(pygame.USEREVENT, is_finish=True))
+            pygame.event.post(pygame.event.Event(USEREVENT))
             return
         pygame.display.set_caption("タイピングゲーム(仮) | Play")  # キャプション設定
         self.screen.fill(Color.WAKATAKE.rgb)  # ウィンドウを塗りつぶす

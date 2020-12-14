@@ -4,9 +4,11 @@
 """
 
 
+import itertools
 import sys
 import typing
 from enum import Enum
+from typing import NamedTuple
 
 import pygame
 from pygame.locals import *  # 定数読み込み
@@ -23,57 +25,81 @@ class States(Enum):
     RESULT = 5  # 結果画面
 
 
+class TStates(NamedTuple):
+    name: Enum
+    number_of_choices: int  # 選択肢の数
+
+
 class State:
     def __init__(self):
-        self.state = States.TITLE  # 立ち上げ時はタイトル画面を表示する
         self.is_running = False  # 状態遷移の有無によって画面の更新をするかどうかに使う
-        self.exist_user = False  # ユーザー名が既に登録されているか
-        self.game_type_key = None
-        self.game_mode_key = None
-        self.selector = None
+        self.exist_user = False
+        self.state = None
+        self.states = [
+            TStates(States.TITLE, 2),
+            TStates(States.USER, 0),
+            TStates(States.TYPE, 2),
+            TStates(States.MODE, 3),
+            TStates(States.PLAY, 0),
+            TStates(States.RESULT, 0),
+        ]
+        self.iter_states = itertools.cycle(self.states)  # 無限ループのイテレータの生成
+        self.transition()  # 状態遷移してself.stateをTITLEにする
 
     def transition(self):
+        self.state = next(self.iter_states)
+        self.selector = FocusSelector(self.state.number_of_choices)
+        self.is_running = False
+
+    def event(self):
         """キーダウンに応じた状態の遷移"""
-        current_state = self.state
         for event in pygame.event.get():
             if event.type == QUIT:  # 閉じるボタン押下
                 pygame.quit()  # Pygame終了(ウィンドウを閉じる)
                 sys.exit(0)  # 処理終了
-            if self.state == States.TITLE and event.type == KEYDOWN:
+            elif event.type == USEREVENT:
+                self.transition()
+            elif event.type == KEYDOWN:
                 if event.key == K_RETURN:
-                    if self.selector.position == 1:
+                    # 終了を選択したとき
+                    if self.state.name == States.TITLE and self.selector.position == 1:
                         pygame.event.post(pygame.event.Event(QUIT))
                         continue
-                    self.state = States.TYPE if self.exist_user else States.USER
-            elif self.state == States.USER and event.type == USEREVENT:
-                if event.is_registered:
-                    self.exist_user = True
-                    self.state = States.TYPE
-            elif self.state == States.TYPE and event.type == KEYDOWN:
-                if event.key == K_RETURN:
-                    self.game_type_key = self.selector.position
-                    self.state = States.MODE  # モード選択へ遷移
-            elif self.state == States.MODE and event.type == KEYDOWN:
-                if event.key == K_RETURN:
-                    self.game_mode_key = self.selector.position
-                    self.state = States.PLAY  # ゲームプレイへ遷移
-            elif self.state == States.PLAY and event.type == USEREVENT:
-                # ゲームプレイ画面で、問題が解き終わったら
-                if event.is_finish:
-                    self.state = States.RESULT  # リザルトへ遷移
-            elif self.state == States.RESULT and event.type == KEYDOWN:
-                if event.key == K_RETURN:
-                    self.state = States.TITLE  # キー入力検知で次の画面へ
-            if (
-                self.state in [States.TITLE, States.TYPE, States.MODE]
-                and event.type == KEYDOWN
-            ):
-                if event.key == K_DOWN:  # 下矢印キーが押されたら
-                    self.selector.down()
-                    self.is_running = False
-                elif event.key == K_UP:  # 上矢印が押されたら
-                    self.selector.up()
-                    self.is_running = False
-        if current_state != self.state:  # 上記で状態遷移されたら
-            self.is_running = False
-            self.selector = None
+                    self.transition()  # 次に遷移する
+                    # ユーザー名が既に登録されているならユーザー入力画面を飛ばす
+                    if self.state.name == States.USER and self.exist_user:
+                        self.transition()
+                # 選択画面の矢印キー操作
+                elif self.state.name in [States.TITLE, States.TYPE, States.MODE]:
+                    if event.key == K_DOWN:  # 下矢印キーが押されたら
+                        self.selector.down()
+                        self.is_running = False
+                    elif event.key == K_UP:  # 上矢印が押されたら
+                        self.selector.up()
+                        self.is_running = False
+
+
+class FocusSelector:
+    """
+    選択をする際に、小見出しのフォーカスする位置を決めるためのクラス
+    """
+
+    def __init__(self, length_of_list):
+        self.length_of_list = length_of_list - 1
+        self.focus_pos = 0
+
+    def down(self):
+        # リスト長よりself.focus_posが大きくならないようにする
+        if self.focus_pos < self.length_of_list:
+            self.focus_pos += 1
+        return self.focus_pos
+
+    def up(self):
+        # self.focus_posが0より小さくならないようにする
+        if self.focus_pos > 0:
+            self.focus_pos -= 1
+        return self.focus_pos
+
+    @property
+    def position(self):
+        return self.focus_pos

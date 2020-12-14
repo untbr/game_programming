@@ -40,30 +40,30 @@ class State:
                 pygame.quit()  # Pygame終了(ウィンドウを閉じる)
                 sys.exit(0)  # 処理終了
             if self.state == States.TITLE and event.type == KEYDOWN:
-                    if event.key == K_RETURN:
-                        if self.selector.position == 1:
-                            pygame.event.post(pygame.event.Event(QUIT))
-                            continue
-                        self.state = States.TYPE if self.exist_user else States.USER
+                if event.key == K_RETURN:
+                    if self.selector.position == 1:
+                        pygame.event.post(pygame.event.Event(QUIT))
+                        continue
+                    self.state = States.TYPE if self.exist_user else States.USER
             elif self.state == States.USER and event.type == USEREVENT:
                 if event.is_registered:
                     self.exist_user = True
                     self.state = States.TYPE
             elif self.state == States.TYPE and event.type == KEYDOWN:
-                    if event.key == K_RETURN:
-                        self.game_type_key = self.selector.position
-                        self.state = States.MODE  # モード選択へ遷移
+                if event.key == K_RETURN:
+                    self.game_type_key = self.selector.position
+                    self.state = States.MODE  # モード選択へ遷移
             elif self.state == States.MODE and event.type == KEYDOWN:
-                    if event.key == K_RETURN:
-                        self.game_mode_key = self.selector.position
-                        self.state = States.PLAY  # ゲームプレイへ遷移
+                if event.key == K_RETURN:
+                    self.game_mode_key = self.selector.position
+                    self.state = States.PLAY  # ゲームプレイへ遷移
             elif self.state == States.PLAY and event.type == USEREVENT:
                 # ゲームプレイ画面で、問題が解き終わったら
                 if event.is_finish:
                     self.state = States.RESULT  # リザルトへ遷移
             elif self.state == States.RESULT and event.type == KEYDOWN:
-                    if event.key == K_RETURN:
-                        self.state = States.TITLE  # キー入力検知で次の画面へ
+                if event.key == K_RETURN:
+                    self.state = States.TITLE  # キー入力検知で次の画面へ
             if (
                 self.state in [States.TITLE, States.TYPE, States.MODE]
                 and event.type == KEYDOWN

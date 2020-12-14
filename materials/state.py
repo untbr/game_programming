@@ -25,7 +25,7 @@ class States(Enum):
     RESULT = 5  # 結果画面
 
 
-class TStates(NamedTuple):
+class TupleState(NamedTuple):
     name: Enum
     number_of_choices: int  # 選択肢の数
 
@@ -33,23 +33,23 @@ class TStates(NamedTuple):
 class State:
     def __init__(self):
         self.is_running = False  # 状態遷移の有無によって画面の更新をするかどうかに使う
-        self.exist_user = False
-        self.state = None
+        self.exist_user = False # ユーザー名を既に登録しているか
+        self.state = None # TupleStatesを格納する変数 
         self.states = [
-            TStates(States.TITLE, 2),
-            TStates(States.USER, 0),
-            TStates(States.TYPE, 2),
-            TStates(States.MODE, 3),
-            TStates(States.PLAY, 0),
-            TStates(States.RESULT, 0),
+            TupleState(States.TITLE, 2),
+            TupleState(States.USER, 0),
+            TupleState(States.TYPE, 2),
+            TupleState(States.MODE, 3),
+            TupleState(States.PLAY, 0),
+            TupleState(States.RESULT, 0),
         ]
         self.iter_states = itertools.cycle(self.states)  # 無限ループのイテレータの生成
         self.transition()  # 状態遷移してself.stateをTITLEにする
 
     def transition(self):
-        self.state = next(self.iter_states)
+        self.state = next(self.iter_states) # 次の状態に遷移する
         self.selector = FocusSelector(self.state.number_of_choices)
-        self.is_running = False
+        self.is_running = False # 再描画の必要を知らせる
 
     def event(self):
         """キーダウンに応じた状態の遷移"""

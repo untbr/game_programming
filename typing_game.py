@@ -14,9 +14,8 @@ def main():
     user = User()  # ユーザー情報を管理するクラス
     game_types = ["Report", "Shiritori"]
     game_instance = None
-    # 小見出しを使った選択画面で使う変数
     while True:
-        state.event()  # キーダウンに応じて状態遷
+        state.event()  # キーダウンに応じて状態遷移
         if not state.is_running:
             if state.state.name == States.TITLE:
                 draw.title(state.selector.position)  # タイトル画面の描画
@@ -27,7 +26,7 @@ def main():
             elif state.state.name == States.TYPE:
                 draw.choose_type(state.selector.position)  # ゲームタイプの描画
                 cls = getattr(game, game_types[state.selector.position])  # 選択された方のクラス
-                game_instance = cls()
+                game_instance = cls() # そのクラスのインスタンス化
             elif state.state.name == States.MODE:
                 game_modes = game_instance.get_mode()
                 draw.choose_mode(game_modes, state.selector.position)  # ゲームモードの描画

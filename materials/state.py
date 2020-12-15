@@ -33,7 +33,7 @@ class TupleState(NamedTuple):
 class State:
     def __init__(self):
         self.is_running = False  # 状態遷移の有無によって画面の更新をするかどうかに使う
-        self.exist_user = False  # ユーザー名を既に登録しているか
+        self.has_user_name = False  # ユーザー名を既に登録しているか
         self.state = None  # TupleStatesを格納する変数
         self.states = [
             TupleState(States.TITLE, 2),
@@ -69,7 +69,7 @@ class State:
                         continue
                     self.transition()  # 次に遷移する
                     # ユーザー名が既に登録されているならユーザー入力画面を飛ばす
-                    if self.state.name == States.USER and self.exist_user:
+                    if self.state.name == States.USER and self.has_user_name:
                         self.transition()
                 # 選択画面の矢印キー操作
                 elif self.state.name in self.has_choices_state:

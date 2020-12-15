@@ -23,7 +23,7 @@ def main():
             elif state.state.name == States.USER:
                 user_name = draw.register()  # ユーザー名入力画面の描写
                 user.name = user_name  # ユーザーインスタンスのnameに名前をセットする
-                state.exist_user = True  # ユーザー名の登録が完了したことを知らせる
+                state.has_user_name = True  # ユーザー名の登録が完了したことを知らせる
             elif state.state.name == States.TYPE:
                 draw.choose_type(state.selector.position)  # ゲームタイプの描画
                 cls = getattr(game, game_types[state.selector.position])  # 選択された方のクラス

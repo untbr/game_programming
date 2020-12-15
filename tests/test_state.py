@@ -68,7 +68,7 @@ class TestState(unittest.TestCase):
         pygame.event.post(pygame.event.Event(KEYDOWN, key=K_RETURN))
         state.event()  # イベント処理
         self.assertEqual(state.state, state.states[1])  # USERに遷移
-        state.exist_user = True  # ユーザー名の登録をしたこととする
+        state.has_user_name = True  # ユーザー名の登録をしたこととする
 
         # 新たにエンターキーを押下し、ゲームタイプ選択画面に遷移させたい
         pygame.event.post(pygame.event.Event(KEYDOWN, key=K_RETURN))

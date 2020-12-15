@@ -26,15 +26,15 @@ class States(Enum):
 
 
 class TupleState(NamedTuple):
-    name: Enum # States
+    name: Enum  # States
     number_of_choices: int  # 選択肢の数
 
 
 class State:
     def __init__(self):
         self.is_running = False  # 状態遷移の有無によって画面の更新をするかどうかに使う
-        self.exist_user = False # ユーザー名を既に登録しているか
-        self.state = None # TupleStatesを格納する変数 
+        self.exist_user = False  # ユーザー名を既に登録しているか
+        self.state = None  # TupleStatesを格納する変数
         self.states = [
             TupleState(States.TITLE, 2),
             TupleState(States.USER, 0),
@@ -43,13 +43,15 @@ class State:
             TupleState(States.PLAY, 0),
             TupleState(States.RESULT, 0),
         ]
+        # 選択肢が1つ以上あるStatesのリスト
+        self.has_choices_state = [i.name for i in self.states if i.number_of_choices != 0]
         self.iter_states = itertools.cycle(self.states)  # 無限ループのイテレータの生成
         self.transition()  # 状態遷移してself.stateをTITLEにする
 
     def transition(self):
-        self.state = next(self.iter_states) # 次の状態に遷移する
+        self.state = next(self.iter_states)  # 次の状態に遷移する
         self.selector = SelectorFocus(self.state.number_of_choices)
-        self.is_running = False # 再描画の必要を知らせる
+        self.is_running = False  # 再描画の必要を知らせる
 
     def event(self):
         """キーダウンに応じた状態の遷移"""
@@ -70,12 +72,9 @@ class State:
                     if self.state.name == States.USER and self.exist_user:
                         self.transition()
                 # 選択画面の矢印キー操作
-                elif self.state.name in [States.TITLE, States.TYPE, States.MODE]:
-                    if event.key == K_DOWN:  # 下矢印キーが押されたら
-                        self.selector.down()
-                        self.is_running = False
-                    elif event.key == K_UP:  # 上矢印が押されたら
-                        self.selector.up()
+                elif self.state.name in self.has_choices_state:
+                    if event.key in self.selector.call_trigger.keys():
+                        self.selector.call_trigger[event.key]()
                         self.is_running = False
 
 
@@ -88,7 +87,9 @@ class SelectorFocus:
     def __init__(self, length_of_list):
         """選択肢の数をもらう"""
         self.length_of_list = length_of_list - 1
-        self.__focus_pos = 0 # 最初は0番目をフォーカスする
+        self.__focus_pos = 0  # 最初は0番目をフォーカスする
+        # 呼び出し条件のキーとオブジェクトIDの辞書
+        self.call_trigger = {K_DOWN: self.down, K_UP: self.up}
 
     def down(self):
         # リスト長よりself.focus_posが大きくならないようにする

@@ -26,7 +26,7 @@ class States(Enum):
 
 
 class TupleState(NamedTuple):
-    name: Enum
+    name: Enum # States
     number_of_choices: int  # 選択肢の数
 
 
@@ -48,7 +48,7 @@ class State:
 
     def transition(self):
         self.state = next(self.iter_states) # 次の状態に遷移する
-        self.selector = FocusSelector(self.state.number_of_choices)
+        self.selector = SelectorFocus(self.state.number_of_choices)
         self.is_running = False # 再描画の必要を知らせる
 
     def event(self):
@@ -79,27 +79,29 @@ class State:
                         self.is_running = False
 
 
-class FocusSelector:
+class SelectorFocus:
     """
-    選択をする際に、小見出しのフォーカスする位置を決めるためのクラス
+    ゲームタイプや難易度の選択で、上下の矢印キーを押下した際に
+    選択肢をフォーカスする位置を決めるためのクラス
     """
 
     def __init__(self, length_of_list):
+        """選択肢の数をもらう"""
         self.length_of_list = length_of_list - 1
-        self.focus_pos = 0
+        self.__focus_pos = 0 # 最初は0番目をフォーカスする
 
     def down(self):
         # リスト長よりself.focus_posが大きくならないようにする
-        if self.focus_pos < self.length_of_list:
-            self.focus_pos += 1
-        return self.focus_pos
+        if self.__focus_pos < self.length_of_list:
+            self.__focus_pos += 1
+        return self.__focus_pos
 
     def up(self):
         # self.focus_posが0より小さくならないようにする
-        if self.focus_pos > 0:
-            self.focus_pos -= 1
-        return self.focus_pos
+        if self.__focus_pos > 0:
+            self.__focus_pos -= 1
+        return self.__focus_pos
 
     @property
     def position(self):
-        return self.focus_pos
+        return self.__focus_pos

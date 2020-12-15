@@ -16,7 +16,7 @@ def main():
         print("{}:{}".format(i.value, i.id))
     idx = input("モードを入力してください: ")
     game.set_mode(game_mode[int(idx)])  # 難易度(品詞)の設定
-    while not game.is_finish():
+    while not game.is_finish:
         word = game.get_word()  # 出題をしてもらう
         print("{}\n{}".format(word.word, word.describe))
         answer = input("answer: ")

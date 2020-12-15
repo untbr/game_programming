@@ -11,7 +11,7 @@ from .shiritori_client import ShiritoriClient
 class Mode(NamedTuple):
     """ゲームの難易度(品詞)を格納する名前付きタプル"""
 
-    id: int  # ユニークキー
+    id: int  # モードのID
     value: str  # 日本語での値
     number_of_words: int  # 解くべき語数
 
@@ -163,7 +163,7 @@ class AGame(metaclass=ABCMeta):
 class Shiritori(AGame):
     def __init__(self) -> None:
         super().__init__(ShiritoriType)
-        self.client = ShiritoriClient()
+        self.client = ShiritoriClient() # サーバとやりとりをするためのクラスインスタンス
         self.head_word = ""  # 頭文字に使う変数
 
     def __str__(self):

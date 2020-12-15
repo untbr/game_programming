@@ -35,9 +35,7 @@ def judge_valid_word(
 @app.get("/shiritori/head_word/", response_model=Response)
 def get_initial_word() -> Response:
     """	
-    ゲーム開始時に出題する頭文字を生成するメソッド	
-    カタカナ、アスキーコードのァからンまでの間の値から一つ選び、	
-    それをひらがなに直す(小文字を避けるため)	
+    ゲーム開始時に出題する頭文字を生成する関数	
     """
     return shiritori.make_initial_word()
 

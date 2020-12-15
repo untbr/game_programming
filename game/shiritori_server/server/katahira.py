@@ -3,7 +3,7 @@ class KataHira:
     カタカナからひらがなへ変換するためのクラス	
     """	
 
-    # 小文字のひらがなのアスキーコードリスト
+    # 小文字のひらがなのユニコード値リスト
     lower_hiragana_list = [
         0x3041,
         0x3043,
@@ -16,7 +16,7 @@ class KataHira:
         0x3087,
         0x308E,
     ]
-    # カタカナとひらがなのアスキーコードの差分
+    # カタカナとひらがなのユニコード値の差分
     kata_hira_diff = 96
 
     def convert(self, katakana: str) -> str:
@@ -33,7 +33,7 @@ class KataHira:
 
     def is_lower_hiragana(self, hiragana_ord: int) -> bool:
         """	
-        ひらがなのアスキーコードが小文字なのかを判定するメソッド	
+        引数のひらがなが小文字なのかを判定するメソッド	
         KataHira直下に定義したlower_hiragana_listを使って、	
         マッチすればTrue、しなければFalseを返す	
         """

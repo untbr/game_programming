@@ -34,7 +34,7 @@ class Shiritori:
     def make_initial_word(self) -> Response:
         """	
         ゲーム開始時に出題する頭文字を生成するメソッド	
-        カタカナ、アスキーコードのァからロまでの間の値から一つ選び、	
+        カタカナのァからロまでの間の値から一つ選び、	
         それをひらがなに直す(小文字を避けるため)	
         """
         return Response(

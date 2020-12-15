@@ -13,7 +13,7 @@ class Mode(NamedTuple):
 
     id: int  # ユニークキー
     value: str  # 日本語での値
-    number_of_words: int  # 制限時間内に解くべき語数(不正解はカウントしない実装をする)
+    number_of_words: int  # 解くべき語数
 
 
 class ReportType(Enum):
@@ -64,9 +64,9 @@ class Score:
 
     def __init__(self, game_info: GameInfo):
         self.__game_info = game_info
-        self.__clear_time = 0
-        self.__number_of_corrects = 0
-        self.__number_of_incorrects = 0
+        self.__clear_time = 0 # クリアタイム
+        self.__number_of_corrects = 0 # 正解した問題数
+        self.__number_of_incorrects = 0 # 不正解だった問題数
 
     @property
     def game_info(self) -> GameInfo:
@@ -99,7 +99,7 @@ class JudgeResponse(NamedTuple):
     """
 
     correct: bool  # 正誤判定結果
-    message: str  # # レポートゲームであれば正しい答え、しりとりならサーバ側からの判定メッセージ
+    message: str  # レポートゲームであれば正しい答え、しりとりならサーバ側からの判定メッセージ
 
 
 class QuestionResponse(NamedTuple):
@@ -116,10 +116,10 @@ class AGame(metaclass=ABCMeta):
     ゲームロジックの抽象クラス
     レポートゲームとしりとりゲームに継承させる
 
-    UI側で
+    利用側は
     ReportもしくはShiritoriのインスタンス化し、set_modeで難易度(品詞)をセット
-    その後、get_word()、judge_word(入力文字)、is_finish()をサイクルする
-    is_finishがTrueの場合(もしくは制限時間が0になれば)リザルト画面に遷移させる
+    その後、get_word()、judge_word(入力文字)、is_finishをサイクルする
+    is_finishがTrueの場合リザルト画面に遷移させる
     """
 
     def __init__(self, game_type: Union[Type[ReportType], Type[ShiritoriType]]):
@@ -152,6 +152,7 @@ class AGame(metaclass=ABCMeta):
         """
         return [i.value for i in self.game_info.type]
 
+    @property
     def is_finish(self) -> bool:
         """
         self.number_of_correctが、そのモードの解くべき問題数に達するとTrueを返しそれ以外でFalseを返す
@@ -193,12 +194,15 @@ class Shiritori(AGame):
             raise Exception("頭文字が設定されていません")
         result = self.client.shiritori(word, self.head_word)
         correct = result["is_correct"]  # 正誤の判定結果
+        # 言葉の尻が「ん」であったとき
         if result["next_head"] == "ん":
             correct = False
             result["message"] = "最後が「ん」になっています"
+        # しりとりが成立しているとき
         if correct:
             self.head_word = result["next_head"]  # 正解なら次の頭文字を更新する
             self.score.number_of_corrects += 1  # 正解数を更新する
+        # しりとりが成立していないとき
         else:
             self.score.number_of_incorrects += 1  # 不正解数を更新する
         # 正しいときはmessageは空で、間違っているときはメッセージが含まれるように
@@ -232,8 +236,8 @@ class Report(AGame):
         with open(self.file_path, mode="r", encoding="shift_jis") as f:
             reader = csv.reader(f)
             rows = [row for row in reader]  # 行をリストに格納していく
-            len_rows = len(rows)
-            for i in range(number_of_words):
+            len_rows = len(rows) # csvの行数
+            for i in range(number_of_words): # 出題する問題数分だけループ
                 line_number = randrange(len_rows)  # 行数分のうちランダムに数値を取る
                 word = rows[line_number]
                 dict_word = {

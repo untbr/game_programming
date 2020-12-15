@@ -179,7 +179,7 @@ class StateDraw(Drawer):
 
     def play(self, game) -> None:
         """ゲームプレイ画面"""
-        if game.is_finish():
+        if game.is_finish:
             pygame.event.post(pygame.event.Event(USEREVENT))
             return
         pygame.display.set_caption("タイピングゲーム(仮) | Play")  # キャプション設定

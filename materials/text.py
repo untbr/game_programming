@@ -1,10 +1,12 @@
 from typing import List
 
+
 class Text:
     """
     PygameのINPUT、EDITINGイベントで使うクラス
     カーソル操作や文字列処理に使う
     """
+
     def __init__(self) -> None:
         self.text = ["|"]  # 入力されたテキストを格納していく変数
         self.editing: List[str] = []  # 全角の文字編集中(変換前)の文字を格納するための変数
@@ -20,11 +22,11 @@ class Text:
         edit(編集中)であるときに呼ばれるメソッド
         全角かつ漢字変換前の確定していないときに呼ばれる
         """
-        if text: # テキストがあるなら
+        if text:  # テキストがあるなら
             self.is_editing = True
             for x in text:
                 self.editing.append(x)  # 編集中の文字列をリストに格納していく
-            self.editing.insert(editing_cursor_pos, "|") # カーソル位置にカーソルを追加
+            self.editing.insert(editing_cursor_pos, "|")  # カーソル位置にカーソルを追加
             disp = "[" + "".join(self.editing) + "]"
         else:
             self.is_editing = False  # テキストが空の時はFalse
@@ -32,16 +34,18 @@ class Text:
         self.editing = []  # 次のeditで使うために空にする
         # self.cursorを読み飛ばして結合する
         return (
-            format(self)[0 : self.cursor_pos] + disp + format(self)[self.cursor_pos+1 :]
+            format(self)[0 : self.cursor_pos]
+            + disp
+            + format(self)[self.cursor_pos + 1 :]
         )
 
     def input(self, text: str) -> str:
         """
         半角文字が打たれたとき、もしくは全角で変換が確定したときに呼ばれるメソッド
         """
-        self.is_editing = False # 編集中ではなくなったのでFalseにする
+        self.is_editing = False  # 編集中ではなくなったのでFalseにする
         for x in text:
-            self.text.insert(self.cursor_pos, x) # カーソル位置にテキストを追加
+            self.text.insert(self.cursor_pos, x)  # カーソル位置にテキストを追加
             # 現在のカーソル位置にテキストを追加したので、カーソル位置を後ろにずらす
             self.cursor_pos += 1
         return format(self)
@@ -50,9 +54,9 @@ class Text:
         """
         確定している文字(半角なら文字入力後、全角なら変換確定後)を削除するためのメソッド
         """
-        if len(self.text) > 1: # 1より大きいとき(カーソルを消さない)
-            self.text.pop(self.cursor_pos - 1) # カーソル位置の一個前を消す
-            self.cursor_pos -= 1 # カーソル位置を前にずらす
+        if len(self.text) > 1:  # 1より大きいとき(カーソルを消さない)
+            self.text.pop(self.cursor_pos - 1)  # カーソル位置の一個前を消す
+            self.cursor_pos -= 1  # カーソル位置を前にずらす
         return format(self)
 
     def enter(self) -> str:
@@ -62,7 +66,7 @@ class Text:
             format(self)[0 : self.cursor_pos] + format(self)[self.cursor_pos + 1 :]
         )
         self.text = ["|"]  # 次回の入力で使うためにself.textを空にする
-        self.cursor_pos = 0 # self.text[0] == "|"となる
+        self.cursor_pos = 0  # self.text[0] == "|"となる
         return entered
 
     def move_cursor_left(self) -> str:

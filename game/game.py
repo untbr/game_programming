@@ -67,9 +67,9 @@ class Score:
 
     def __init__(self, game_info: GameInfo):
         self.__game_info = game_info
-        self.__clear_time = 0 # クリアタイム
-        self.__number_of_corrects = 0 # 正解した問題数
-        self.__number_of_incorrects = 0 # 不正解だった問題数
+        self.__clear_time = 0  # クリアタイム
+        self.__number_of_corrects = 0  # 正解した問題数
+        self.__number_of_incorrects = 0  # 不正解だった問題数
 
     @property
     def game_info(self) -> GameInfo:
@@ -173,7 +173,7 @@ class AGame(metaclass=ABCMeta):
 class Shiritori(AGame):
     def __init__(self) -> None:
         super().__init__(ShiritoriType)
-        self.client = ShiritoriClient() # サーバとやりとりをするためのクラスインスタンス
+        self.client = ShiritoriClient()  # サーバとやりとりをするためのクラスインスタンス
         self.head_word = ""  # 頭文字に使う変数
 
     def __str__(self):
@@ -250,8 +250,8 @@ class Report(AGame):
         with open(self.file_path, mode="r", encoding="shift_jis") as f:
             reader = csv.reader(f)
             rows = [row for row in reader]  # 行をリストに格納していく
-            len_rows = len(rows) # csvの行数
-            for i in range(number_of_words): # 出題する問題数分だけループ
+            len_rows = len(rows)  # csvの行数
+            for i in range(number_of_words):  # 出題する問題数分だけループ
                 line_number = randrange(len_rows)  # 行数分のうちランダムに数値を取る
                 word = rows[line_number]
                 dict_word = {

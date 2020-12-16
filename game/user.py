@@ -40,7 +40,7 @@ class User:
         self.__name = name
 
     @property
-    def scores(self) -> List[Score]: 
+    def scores(self) -> List[Score]:
         """スコアを返すプロパティ"""
         return self.__scores
 

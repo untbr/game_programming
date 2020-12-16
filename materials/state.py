@@ -18,7 +18,7 @@ class States(Enum):
     """状態の定義"""
 
     TITLE = 0  # タイトル画面
-    USER = 1 # ユーザー名入力画面
+    USER = 1  # ユーザー名入力画面
     TYPE = 2  # ゲームモードタイプ選択画面
     MODE = 3  # ゲームモード選択画面
     PLAY = 4  # プレイ画面
@@ -27,12 +27,14 @@ class States(Enum):
 
 class TupleState(NamedTuple):
     """Statesと選択肢の数を格納するタプルの定義"""
+
     name: Enum  # States
     number_of_choices: int  # 選択肢の数
 
 
 class State:
     """状態遷移を管理するクラス"""
+
     def __init__(self) -> None:
         self.is_running = False  # 状態遷移の有無によって画面の更新をするかどうかに使う
         self.has_user_name = False  # ユーザー名を既に登録しているか
@@ -46,7 +48,9 @@ class State:
             TupleState(States.RESULT, 0),
         ]
         # 選択肢が1つ以上あるStatesのリスト
-        self.has_choices_state = [i.name for i in self.states if i.number_of_choices != 0]
+        self.has_choices_state = [
+            i.name for i in self.states if i.number_of_choices != 0
+        ]
         self.iter_states = itertools.cycle(self.states)  # 無限ループのイテレータの生成
         self.transition()  # 状態遷移してself.stateをTITLEにする
 

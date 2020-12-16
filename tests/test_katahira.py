@@ -4,7 +4,7 @@ import unittest
 
 sys.path.append(os.pardir)
 
-from server.katahira import KataHira
+from game.shiritori_server.katahira import KataHira
 
 
 class TestKataHira(unittest.TestCase):

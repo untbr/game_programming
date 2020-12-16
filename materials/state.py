@@ -31,7 +31,7 @@ class TupleState(NamedTuple):
 
 
 class State:
-    def __init__(self):
+    def __init__(self) -> None:
         self.is_running = False  # 状態遷移の有無によって画面の更新をするかどうかに使う
         self.has_user_name = False  # ユーザー名を既に登録しているか
         self.state = None  # TupleStatesを格納する変数
@@ -48,12 +48,12 @@ class State:
         self.iter_states = itertools.cycle(self.states)  # 無限ループのイテレータの生成
         self.transition()  # 状態遷移してself.stateをTITLEにする
 
-    def transition(self):
+    def transition(self) -> None:
         self.state = next(self.iter_states)  # 次の状態に遷移する
         self.selector = SelectorFocus(self.state.number_of_choices)
         self.is_running = False  # 再描画の必要を知らせる
 
-    def event(self):
+    def event(self) -> None:
         """キーダウンに応じた状態の遷移"""
         for event in pygame.event.get():
             if event.type == QUIT:  # 閉じるボタン押下
@@ -84,25 +84,25 @@ class SelectorFocus:
     選択肢をフォーカスする位置を決めるためのクラス
     """
 
-    def __init__(self, length_of_list):
+    def __init__(self, length_of_list: int):
         """選択肢の数をもらう"""
         self.length_of_list = length_of_list - 1
         self.__focus_pos = 0  # 最初は0番目をフォーカスする
         # 呼び出し条件のキーとオブジェクトIDの辞書
         self.call_trigger = {K_DOWN: self.down, K_UP: self.up}
 
-    def down(self):
+    def down(self) -> int:
         # リスト長よりself.focus_posが大きくならないようにする
         if self.__focus_pos < self.length_of_list:
             self.__focus_pos += 1
         return self.__focus_pos
 
-    def up(self):
+    def up(self) -> int:
         # self.focus_posが0より小さくならないようにする
         if self.__focus_pos > 0:
             self.__focus_pos -= 1
         return self.__focus_pos
 
     @property
-    def position(self):
+    def position(self) -> int:
         return self.__focus_pos

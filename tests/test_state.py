@@ -100,7 +100,5 @@ class TestState:
         pygame.event.post(pygame.event.Event(KEYDOWN, key=K_RETURN))
         state.event()  # イベント処理
         assert state.state == state.states[2]  # TYPEに遷移
+        pygame.quit()
 
-
-if __name__ == "__main__":
-    unittest.main()

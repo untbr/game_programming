@@ -55,6 +55,3 @@ class TestText:
             text.move_cursor_right()
             assert text.cursor_pos == i + 1
 
-
-if __name__ == "__main__":
-    unittest.main()

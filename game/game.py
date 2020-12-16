@@ -46,14 +46,17 @@ class GameInfo:
 
     @property
     def type(self) -> Union[Type[ReportType], Type[ShiritoriType]]:
+        """ReportTypeもしくはShiritoriTypeを返すプロパティ"""
         return self.__type
 
     @property
     def mode(self) -> Mode:
+        """Modeを返すプロパティ"""
         return self.__mode
 
     @mode.setter
     def mode(self, mode: Mode) -> None:
+        """Modeのsetter"""
         self.__mode = mode
 
 
@@ -70,26 +73,32 @@ class Score:
 
     @property
     def game_info(self) -> GameInfo:
+        """GameInfoを返すプロパティ"""
         return self.__game_info
 
     @property
     def clear_time(self) -> int:
+        """クリアタイムを返すプロパティ"""
         return self.__clear_time
 
     @property
     def number_of_corrects(self) -> int:
+        """正解数number_of_correctsを返すプロパティ"""
         return self.__number_of_corrects
 
     @number_of_corrects.setter
     def number_of_corrects(self, num) -> None:
+        """正解数number_of_correctsのsetter"""
         self.__number_of_corrects = num
 
     @property
     def number_of_incorrects(self) -> int:
+        """不正解数number_of_incorrectsを返すプロパティ"""
         return self.__number_of_incorrects
 
     @number_of_incorrects.setter
     def number_of_incorrects(self, num) -> None:
+        """不正解数number_of_incorrectsのsetter"""
         self.__number_of_incorrects = num
 
 
@@ -130,32 +139,33 @@ class AGame(metaclass=ABCMeta):
 
     @abstractmethod
     def set_mode(self, game_mode: Mode) -> None:
+        """ゲームの難易度を設定する抽象メソッド"""
         raise NotImplementedError()
 
     @abstractmethod
     def get_word(self) -> QuestionResponse:
         """
-        1単語返す
+        出題する問題を返す抽象メソッド
         """
         raise NotImplementedError()
 
     @abstractmethod
     def judge_word(self, word: str) -> JudgeResponse:
         """
-        入力された単語wordが正しいか判定する
+        入力された単語wordが正しいか判定する抽象メソッド
         """
         raise NotImplementedError()
 
     def get_mode(self) -> List[Mode]:
         """
-        ゲームのタイプがセットされた状態のGameInfo(__init__でインスタンス化済み)を返す
+        セットされたゲームのタイプのModeを返すメソッド
         """
         return [i.value for i in self.game_info.type]
 
     @property
     def is_finish(self) -> bool:
         """
-        self.number_of_correctが、そのモードの解くべき問題数に達するとTrueを返しそれ以外でFalseを返す
+        self.number_of_correctが、そのモードの解くべき問題数に達するとTrueを返しそれ以外でFalseを返すメソッド
         """
         return self.game_info.mode.number_of_words == self.score.number_of_corrects
 
@@ -170,10 +180,12 @@ class Shiritori(AGame):
         return "しりとりゲーム: " + self.game_info.mode.value
 
     def set_mode(self, game_mode: Mode) -> None:
+        """しりとりゲームの品詞を設定する具象メソッド"""
         self.game_info.mode = game_mode
         self.client.set_mode(game_mode.id)
 
     def get_word(self) -> QuestionResponse:
+        """出題する問題を返す具象メソッド"""
         # ゲーム開始時は頭文字が設定されてないので、
         # クライアントを通して取得する
         if not self.head_word:
@@ -188,6 +200,7 @@ class Shiritori(AGame):
 
     def judge_word(self, word: str) -> JudgeResponse:
         """
+        入力された単語wordが正しいか判定する具象メソッド
         判定結果が真ならself.head_wordを設定する
         """
         if self.head_word is None:
@@ -223,6 +236,7 @@ class Report(AGame):
 
     def set_mode(self, game_mode: Mode) -> None:
         """
+        レポートゲームの難易度を設定する具象メソッド
         モードをセットすれば解くべき問題数がわかるので、
         それを使ってファイルから問題数分の単語を拾ってself.wordsに格納する
         """
@@ -256,15 +270,13 @@ class Report(AGame):
         return "".join(word)
 
     def get_word(self) -> QuestionResponse:
-        """
-        self.wordsから単語を返す
-        """
+        """出題する問題を返す具象メソッド"""
         word = self.words[-1]  # 最後の要素
         return QuestionResponse(self.hole(list(word["question"])), word["description"])
 
     def judge_word(self, word: str) -> JudgeResponse:
         """
-        入力された単語の正誤を判定する
+        入力された単語wordが正しいか判定する具象メソッド
         正誤にかかわらず、出題されたself.wordsは削除される
         ただし、不正解であれば削除したのち、新たに1問分self.wordsに追加する
         (正解時のみself.wordsのlengthが減っていく)

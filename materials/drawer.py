@@ -31,12 +31,14 @@ class Drawer:
         return used_height
 
     def make_header_outline(self):
+        """ヘッダーの枠を表示するメソッド"""
         top_start_pos, top_end_pos = (100, 100), (700, 100)
         bottom_start_pos, bottom_end_pos = (100, 220), (700, 220)
         pygame.draw.line(self.screen, Color.BLUE.rgb, top_start_pos, top_end_pos)
         pygame.draw.line(self.screen, Color.BLUE.rgb, bottom_start_pos, bottom_end_pos)
 
     def make_header_underline(self):
+        """ヘッダーのアンダーラインを表示するメソッド"""
         start_pos, end_pos = (100, 110), (700, 110)
         pygame.draw.line(self.screen, Color.BLACK.rgb, start_pos, end_pos)
 
@@ -143,6 +145,7 @@ class StateDraw(Drawer):
         pygame.display.update()  # 画面更新
 
     def register(self):
+        """ユーザー名入力画面"""
         pygame.display.set_caption("タイピングゲーム(仮) | User")  # キャプション設定
         self.screen.fill(Color.WAKATAKE.rgb)  # ウィンドウを塗りつぶす
         title = "ユーザー名入力"
@@ -205,6 +208,7 @@ class StateDraw(Drawer):
         self.play(game)
 
     def input_text(self):
+        """テキスト入力をするメソッド"""
         pygame.key.start_text_input()
         text = Text()  # Textクラスのインスタンス化
         input_text = "|"

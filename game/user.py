@@ -31,14 +31,17 @@ class User:
 
     @property
     def name(self) -> str:
+        """ユーザー名を返すプロパティ"""
         return self.__name
 
     @name.setter
     def name(self, name: str) -> None:
+        """ユーザー名のsetter"""
         self.__name = name
 
     @property
-    def scores(self) -> List[Score]:
+    def scores(self) -> List[Score]: 
+        """スコアを返すプロパティ"""
         return self.__scores
 
     def add_score(self, score: Score) -> None:

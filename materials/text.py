@@ -1,6 +1,10 @@
 from typing import List
 
 class Text:
+    """
+    PygameのINPUT、EDITINGイベントで使うクラス
+    カーソル操作や文字列処理に使う
+    """
     def __init__(self) -> None:
         self.text = ["|"]  # 入力されたテキストを格納していく変数
         self.editing: List[str] = []  # 全角の文字編集中(変換前)の文字を格納するための変数

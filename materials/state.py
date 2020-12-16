@@ -18,7 +18,7 @@ class States(Enum):
     """状態の定義"""
 
     TITLE = 0  # タイトル画面
-    USER = 1
+    USER = 1 # ユーザー名入力画面
     TYPE = 2  # ゲームモードタイプ選択画面
     MODE = 3  # ゲームモード選択画面
     PLAY = 4  # プレイ画面
@@ -26,11 +26,13 @@ class States(Enum):
 
 
 class TupleState(NamedTuple):
+    """Statesと選択肢の数を格納するタプルの定義"""
     name: Enum  # States
     number_of_choices: int  # 選択肢の数
 
 
 class State:
+    """状態遷移を管理するクラス"""
     def __init__(self) -> None:
         self.is_running = False  # 状態遷移の有無によって画面の更新をするかどうかに使う
         self.has_user_name = False  # ユーザー名を既に登録しているか
@@ -49,12 +51,13 @@ class State:
         self.transition()  # 状態遷移してself.stateをTITLEにする
 
     def transition(self) -> None:
+        """実際に状態遷移をするメソッド"""
         self.state = next(self.iter_states)  # 次の状態に遷移する
         self.selector = SelectorFocus(self.state.number_of_choices)
         self.is_running = False  # 再描画の必要を知らせる
 
     def event(self) -> None:
-        """キーダウンに応じた状態の遷移"""
+        """キーダウンに応じた状態の遷移を管理するメソッド"""
         for event in pygame.event.get():
             if event.type == QUIT:  # 閉じるボタン押下
                 pygame.quit()  # Pygame終了(ウィンドウを閉じる)
@@ -92,17 +95,24 @@ class SelectorFocus:
         self.call_trigger = {K_DOWN: self.down, K_UP: self.up}
 
     def down(self) -> int:
-        # リスト長よりself.focus_posが大きくならないようにする
+        """
+        下矢印が押されたときに呼ばれるメソッド
+        選択肢の数よりself.focus_posが大きくならないように制御する
+        """
         if self.__focus_pos < self.length_of_list:
             self.__focus_pos += 1
         return self.__focus_pos
 
     def up(self) -> int:
-        # self.focus_posが0より小さくならないようにする
+        """
+        上矢印が押されたときに呼ばれるメソッド
+        self.focus_posが0より小さくならないように制御する
+        """
         if self.__focus_pos > 0:
             self.__focus_pos -= 1
         return self.__focus_pos
 
     @property
     def position(self) -> int:
+        """フォーカスするべき位置を返すプロパティ"""
         return self.__focus_pos

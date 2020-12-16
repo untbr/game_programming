@@ -1,13 +1,12 @@
 import os
 import sys
-import unittest
 
 sys.path.append(os.pardir)
 
 from game.shiritori_server.katahira import KataHira
 
 
-class TestKataHira(unittest.TestCase):
+class TestKataHira:
     lower_hiragana = "ぁぃぅぇぉっゃゅょゎ"
 
     katakana = (
@@ -42,7 +41,7 @@ class TestKataHira(unittest.TestCase):
         """
 
         for i, word in enumerate(KataHira.lower_hiragana_list):
-            self.assertEqual(word, ord(TestKataHira.lower_hiragana[i]))
+            assert word ==  ord(TestKataHira.lower_hiragana[i])
 
     def test_convert(self):
         """
@@ -53,7 +52,7 @@ class TestKataHira(unittest.TestCase):
         conv_result = ""
         for x in TestKataHira.katakana:
             conv_result += conv.convert(x)
-        self.assertEqual(conv_result, TestKataHira.hiragana)
+        assert conv_result == TestKataHira.hiragana
 
     def test_is_lower_hiragana(self):
         """
@@ -64,8 +63,8 @@ class TestKataHira(unittest.TestCase):
         # TestKataHira.hiraganaはすべて大文字なのでFalseが期待される
         for x in TestKataHira.hiragana:
             is_lower_hiragana = conv.is_lower_hiragana(ord(x))
-            self.assertFalse(is_lower_hiragana)
+            assert is_lower_hiragana == False
         # TestKataHira.lower_hiraganaはすべて小文字なのでTrueが期待される
         for x in TestKataHira.lower_hiragana:
             is_lower_hiragana = conv.is_lower_hiragana(ord(x))
-            self.assertTrue(is_lower_hiragana)
+            assert is_lower_hiragana == True

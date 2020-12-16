@@ -5,7 +5,9 @@ import pygame
 from pygame.locals import *
 
 sys.path.append(os.pardir)
-
+# 使用可能なビデオデバイスがないと言われるので、
+# ダミーの環境変数を通しておく
+os.environ["SDL_VIDEODRIVER"] = "dummy"
 from materials.state import SelectorFocus, State
 
 
@@ -59,10 +61,10 @@ class TestState:
         5, リザルト
         という遷移がサイクルすることのテスト
         """
-        pygame.init()
+        pygame.display.init()
         state = State()  # この時点での状態はTITLE
         assert state.selector.position == 0  # フォーカスは一番上(「開始」)
-        pygame.event.clear()  # 溜まっているイベントを削除する
+        #pygame.event.clear()  # 溜まっているイベントを削除する
 
         # 新たにエンターキーを押下し、ユーザー名の登録に遷移させたい
         pygame.event.post(pygame.event.Event(KEYDOWN, key=K_RETURN))
@@ -100,5 +102,4 @@ class TestState:
         pygame.event.post(pygame.event.Event(KEYDOWN, key=K_RETURN))
         state.event()  # イベント処理
         assert state.state == state.states[2]  # TYPEに遷移
-        pygame.quit()
 

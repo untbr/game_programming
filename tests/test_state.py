@@ -64,7 +64,7 @@ class TestState:
         pygame.display.init()
         state = State()  # この時点での状態はTITLE
         assert state.selector.position == 0  # フォーカスは一番上(「開始」)
-        #pygame.event.clear()  # 溜まっているイベントを削除する
+        pygame.event.clear()  # 溜まっているイベントを削除する
 
         # 新たにエンターキーを押下し、ユーザー名の登録に遷移させたい
         pygame.event.post(pygame.event.Event(KEYDOWN, key=K_RETURN))

@@ -123,10 +123,6 @@ class StateDraw(Drawer):
     """
 
     def __init__(self) -> None:
-        """
-        コンストラクタ
-        width: ウィンドウの横幅, height: ウィンドウの縦幅
-        """
         super().__init__()
         pygame.key.stop_text_input()  # input, editingを止める
 

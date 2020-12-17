@@ -84,7 +84,6 @@ class State:
                         self.selector.call_trigger[event.key]()
                         self.is_running = False
 
-
 class SelectorFocus:
     """
     ゲームタイプや難易度の選択で、上下の矢印キーを押下した際に

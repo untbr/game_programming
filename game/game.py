@@ -9,7 +9,7 @@ from .shiritori_client import ShiritoriClient
 
 
 class Mode(NamedTuple):
-    """ゲームの難易度(品詞)を格納する名前付きタプル"""
+    """ゲームの難易度(品詞)を格納する名前付きタプルの定義"""
 
     id: int  # モードのID
     value: str  # 日本語での値
@@ -25,11 +25,7 @@ class ReportType(Enum):
 
 
 class ShiritoriType(Enum):
-    """
-    しりとりゲームの品詞の列挙体
-    プレイできる品詞はAPIで取得できるようにしているが、
-    こっち側のいい実装が思い浮かばないのでとりあえず決め打ち
-    """
+    """しりとりゲームの品詞の列挙体"""
 
     NOUN = Mode(0, "名詞", 3)
     VERB = Mode(1, "動詞", 2)
@@ -37,9 +33,7 @@ class ShiritoriType(Enum):
 
 
 class GameInfo:
-    """
-    ゲームの情報に関するクラス
-    """
+    """ゲームの情報に関するクラス"""
 
     def __init__(self, game_type: Union[Type[ReportType], Type[ShiritoriType]]) -> None:
         self.__type = game_type
@@ -104,7 +98,7 @@ class Score:
 
 class JudgeResponse(NamedTuple):
     """
-    正誤判定した際に使う名前付きタプル
+    正誤判定した際に使う名前付きタプルの定義
     """
 
     correct: bool  # 正誤判定結果
@@ -113,7 +107,7 @@ class JudgeResponse(NamedTuple):
 
 class QuestionResponse(NamedTuple):
     """
-    単語出題に使う名前付きタプル
+    問題の出題に使う名前付きタプル
     """
 
     word: str  # 穴あき単語もしくは頭文字

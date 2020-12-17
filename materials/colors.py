@@ -33,10 +33,7 @@ class Color(Enum):
 
     @property
     def comp(self) -> tuple:
-        """
-        補色を求めるメソッド
-        引数(元の色)と返り値(補色)はタプル型(Red, Green, Blue)
-        """
+        """補色を求めるメソッド"""
         value = max(self.value) + min(self.value)  # RGB値の最大, 最小の和
         tmp = list(self.value)  # 計算をするのでリスト型にする
         for i, clr_value in enumerate(self.value):

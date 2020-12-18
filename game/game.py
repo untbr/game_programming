@@ -63,7 +63,7 @@ class Score:
         self.__game_info = game_info
         self.__number_of_corrects = 0  # 正解した問題数
         self.__number_of_incorrects = 0  # 不正解だった問題数
-        self.__grade = ""  # 5段階評価の成績(S, A, B, C, D)
+        self.__grade = "-"  # 5段階評価の成績(S, A, B, C, D)
 
     @property
     def game_info(self) -> GameInfo:

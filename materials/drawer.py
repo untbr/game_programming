@@ -185,7 +185,11 @@ class StateDraw(Drawer):
         self.screen.fill(Color.WAKATAKE.rgb)  # ウィンドウを塗りつぶす
         # 画面に表示するテキストの設定
         self.make_top_left_subheader(format(game))
-        self.make_top_right_subheader("00:00")
+        self.make_top_right_subheader(
+            "{}/{}".format(
+                game.score.number_of_corrects, game.game_info.mode.number_of_words
+            )
+        )
         pygame.display.update()  # 画面更新
         question = game.get_word()
         used_height = self.make_header(question.word, -80)  # 取得した単語の表示

@@ -22,9 +22,8 @@ class User:
         if not self.scores:
             return ""
         latest_score = self.scores[-1]
-        return "ユーザー名: {}\n制限時間内に正解するべき問題数: {}\n正解数: {}\n不正解数: {}".format(
+        return "ユーザー名: {}\n正解数: {}\n不正解数: {}".format(
             self.__name,
-            latest_score.game_info.mode.number_of_words,
             latest_score.number_of_corrects,
             latest_score.number_of_incorrects,
         )

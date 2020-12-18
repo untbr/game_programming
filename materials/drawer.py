@@ -179,6 +179,7 @@ class StateDraw(Drawer):
     def play(self, game) -> None:
         """ゲームプレイ画面"""
         if game.is_finish:
+            game.score.set_grade() # 評価の算出
             pygame.event.post(pygame.event.Event(USEREVENT))
             return
         pygame.display.set_caption("タイピングゲーム(仮) | Play")  # キャプション設定

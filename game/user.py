@@ -22,10 +22,11 @@ class User:
         if not self.scores:
             return ""
         latest_score = self.scores[-1]
-        return "ユーザー名: {}\n正解数: {}\n不正解数: {}".format(
+        return "ユーザー名: {}\n正解数: {}\n不正解数: {}\n評価: {}".format(
             self.__name,
             latest_score.number_of_corrects,
             latest_score.number_of_incorrects,
+            latest_score.grade
         )
 
     @property

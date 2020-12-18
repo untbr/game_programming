@@ -61,19 +61,14 @@ class Score:
 
     def __init__(self, game_info: GameInfo):
         self.__game_info = game_info
-        self.__clear_time = 0  # クリアタイム
         self.__number_of_corrects = 0  # 正解した問題数
         self.__number_of_incorrects = 0  # 不正解だった問題数
+        self.__grade = ""  # 5段階評価の成績(S, A, B, C, D)
 
     @property
     def game_info(self) -> GameInfo:
         """GameInfoを返すプロパティ"""
         return self.__game_info
-
-    @property
-    def clear_time(self) -> int:
-        """クリアタイムを返すプロパティ"""
-        return self.__clear_time
 
     @property
     def number_of_corrects(self) -> int:
@@ -94,6 +89,33 @@ class Score:
     def number_of_incorrects(self, num) -> None:
         """不正解数number_of_incorrectsのsetter"""
         self.__number_of_incorrects = num
+
+    @property
+    def grade(self) -> str:
+        return self.__grade
+
+    def set_grade(self) -> None:
+        """
+        成績は、
+        不正解数 < 必要正解数 + nから算出される
+        n=0  -> S
+        n=3  -> A
+        n=6  -> B
+        n=9  -> C
+        n=12 -> D
+        実装は、
+        不正解数 - 必要正回数 < n
+        """
+        # そのモードの解くべき問題数と正解数の差
+        diff_between_incorrects_and_words = (
+            self.number_of_incorrects - self.__game_info.mode.number_of_words
+        )
+        # 差分と成績の辞書
+        dict_n = {"S": 0, "A": 3, "B": 6, "C": 9, "D": 12}
+        for k, v in dict_n.items():
+            if diff_between_incorrects_and_words < v:
+                self.__grade = k
+                break
 
 
 class JudgeResponse(NamedTuple):

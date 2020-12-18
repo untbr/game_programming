@@ -106,7 +106,7 @@ class Score:
         実装は、
         不正解数 - 必要正回数 < n
         """
-        # そのモードの解くべき問題数と正解数の差
+        # 不正解数とそのモードの解くべき問題数の差
         diff_between_incorrects_and_words = (
             self.number_of_incorrects - self.__game_info.mode.number_of_words
         )

@@ -90,7 +90,7 @@ class Drawer:
         """画面中央下を塗りつぶすメソッド"""
         self.screen.fill(
             Color.WAKATAKE.rgb,
-            (0.0, float(self.height - 30 * 2), float(self.width), float(30)),
+            (0, self.height - 40 * 2, self.width, 45),
         )
 
     def text_box(self, text):
@@ -205,29 +205,36 @@ class StateDraw(Drawer):
         pygame.key.start_text_input()
         text = Text()  # Textクラスのインスタンス化
         input_text = "|"
+        self.text_box(input_text)
+        pygame.display.update()
+        call_trigger = {
+            K_BACKSPACE: text.delete,
+            K_LEFT: text.move_cursor_left,
+            K_RIGHT: text.move_cursor_right,
+            K_RETURN : text.enter
+        }
         while True:
-            for event in pygame.event.get():
-                if event.type == QUIT:
-                    pygame.quit()  # Pygame終了
-                    sys.exit(0)  # 処理終了
-                elif event.type == KEYDOWN:
-                    if not text.is_editing:  # 編集中(全角の変換前)でないとき
-                        if event.key == K_BACKSPACE:  # BS時
-                            input_text = text.delete()  # 確定した方から削除する
-                        if event.key == K_LEFT:
-                            input_text = text.move_cursor_left()  # 文字のカーソルを左に動かす
-                        if event.key == K_RIGHT:
-                            input_text = text.move_cursor_right()  # 文字のカーソルを右に動かす
-                    if event.unicode in ("\r", "") and event.key == K_RETURN:
-                        self.text_box("")
-                        pygame.key.stop_text_input()
-                        return text.enter()  # 確定した文字の取得
-                elif event.type == TEXTEDITING:  # 全角入力するときに必ず真
-                    input_text = text.edit(event.text, event.start)
-                elif event.type == TEXTINPUT:  # 半角入力するときに必ず使う(もしくは全角時enter)
-                    input_text = text.input(event.text)
+            event = pygame.event.poll()
+            if event.type == NOEVENT:
+                continue
+            if event.type == QUIT:
+                pygame.quit()  # Pygame終了
+                sys.exit(0)  # 処理終了
+            # 半角入力中(もしくは全角入力の確定時)の矢印もしくはエンターキー押下時の処理
+            elif event.type == KEYDOWN and not text.is_editing:
+                if event.key in call_trigger.keys():
+                    input_text = call_trigger[event.key]()
+                if event.unicode in ("\r", "") and event.key == K_RETURN:
+                    break
+            elif event.type == TEXTEDITING:  # 全角入力するときに必ず真
+                input_text = text.edit(event.text, event.start)
+            elif event.type == TEXTINPUT:  # 半角入力するときに必ず使う(もしくは全角時enter)
+                input_text = text.input(event.text)
+            if event.type in [KEYDOWN, TEXTEDITING, TEXTINPUT]:
                 self.text_box(input_text)
                 pygame.display.update()
+        pygame.key.stop_text_input()
+        return input_text
 
     def result(self, user):
         """リザルト画面"""

@@ -164,49 +164,41 @@ class StateDraw(Drawer):
         self.make_subheader(subheader_list, 0, focus_index)
         pygame.display.update()  # 画面更新
 
-    def choose_mode(self, game_modes, focus_index) -> None:
+    def choose_mode(self, game_modes_list, focus_index) -> None:
         """モード選択画面"""
         pygame.display.set_caption("タイピングゲーム(仮) | Mode")  # キャプション設定
         self.screen.fill(Color.WAKATAKE.rgb)  # ウィンドウを塗りつぶす
-        # 画面に表示するテキストの設定
         title = "モード選択"
         self.make_header(title)
         self.make_header_outline()
-        mode_list = [str(i.value) for i in game_modes]
-        self.make_subheader(mode_list, 0, focus_index)
+        self.make_subheader(game_modes_list, 0, focus_index)
         pygame.display.update()  # 画面更新
 
-    def play(self, game) -> None:
-        """ゲームプレイ画面"""
-        if game.is_finish:
-            game.score.set_grade() # 評価の算出
-            pygame.event.post(pygame.event.Event(USEREVENT))
-            return
+    def play(self, mode_info, progress) -> None:
+        """
+        ゲームプレイ画面
+        しりとりの場合に出題する頭文字の取得に時間がかかるので、
+        先に描画できるものは描画して、あとから出題する
+        """
         pygame.display.set_caption("タイピングゲーム(仮) | Play")  # キャプション設定
         self.screen.fill(Color.WAKATAKE.rgb)  # ウィンドウを塗りつぶす
         # 画面に表示するテキストの設定
-        self.make_top_left_subheader(format(game))
-        self.make_top_right_subheader(
-            "{}/{}".format(
-                game.score.number_of_corrects, game.game_info.mode.number_of_words
-            )
-        )
+        self.make_top_left_subheader(mode_info)
+        self.make_top_right_subheader(progress)
         pygame.display.update()  # 画面更新
-        question = game.get_word()
+        question = yield
         used_height = self.make_header(question.word, -80)  # 取得した単語の表示
         description_list = textwrap.wrap(question.describe, 18)  # 18字ごとに区切る
         self.make_subheader(description_list, -used_height * 3)  # 取得した説明の表示
         self.make_header_underline()
         pygame.display.update()  # 画面更新
-        input_text = self.input_text()  # 文字入力
-        judge = game.judge_word(input_text)  # 判定
+        judge = yield self.input_text()  # 入力を戻し、判定してもらう
         if not judge.correct:
             self.fill_bottom_subheader()  # 塗りつぶし
             pygame.display.update()  # 画面更新
             self.make_bottom_subheader(judge.message)
             pygame.display.update()  # 画面更新
             sleep(2)  # 不正解時のメッセージを見せるために2秒待機
-        self.play(game)
 
     def input_text(self):
         """テキスト入力をするメソッド"""
@@ -226,11 +218,10 @@ class StateDraw(Drawer):
                             input_text = text.move_cursor_left()  # 文字のカーソルを左に動かす
                         if event.key == K_RIGHT:
                             input_text = text.move_cursor_right()  # 文字のカーソルを右に動かす
-                    if len(event.unicode) == 0:  # 確定時
-                        if event.key == K_RETURN:
-                            self.text_box("")
-                            pygame.key.stop_text_input()
-                            return text.enter()  # 確定した文字の取得
+                    if event.unicode in ("\r", "") and event.key == K_RETURN:
+                        self.text_box("")
+                        pygame.key.stop_text_input()
+                        return text.enter()  # 確定した文字の取得
                 elif event.type == TEXTEDITING:  # 全角入力するときに必ず真
                     input_text = text.edit(event.text, event.start)
                 elif event.type == TEXTINPUT:  # 半角入力するときに必ず使う(もしくは全角時enter)
@@ -241,7 +232,7 @@ class StateDraw(Drawer):
     def result(self, user):
         """リザルト画面"""
         pygame.display.set_caption("タイピングゲーム(仮) | Result")  # キャプション設定
-        result = format(user).split("\n")
+        result = user.split("\n")
         self.screen.fill(Color.WAKATAKE.rgb)  # ウィンドウを塗りつぶす
         title = "リザルト"
         self.make_header(title)

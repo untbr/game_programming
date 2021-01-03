@@ -185,6 +185,12 @@ class AGame(metaclass=ABCMeta):
         """
         return self.game_info.mode.number_of_words == self.score.number_of_corrects
 
+    @property
+    def progress(self) -> str:
+        return "{}/{}".format(
+            self.score.number_of_corrects, self.game_info.mode.number_of_words
+        )
+
 
 class Shiritori(AGame):
     def __init__(self) -> None:

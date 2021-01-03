@@ -37,7 +37,6 @@ class State:
 
     def __init__(self) -> None:
         self.is_running = False  # 状態遷移の有無によって画面の更新をするかどうかに使う
-        self.has_user_name = False  # ユーザー名を既に登録しているか
         self.state = None  # TupleStatesを格納する変数
         self.states = [
             TupleState(States.TITLE, 2),
@@ -66,23 +65,21 @@ class State:
             if event.type == QUIT:  # 閉じるボタン押下
                 pygame.quit()  # Pygame終了(ウィンドウを閉じる)
                 sys.exit(0)  # 処理終了
-            elif event.type == USEREVENT:
-                self.transition()
-            elif event.type == KEYDOWN:
-                if event.key == K_RETURN:
-                    # 終了を選択したとき
-                    if self.state.name == States.TITLE and self.selector.position == 1:
-                        pygame.event.post(pygame.event.Event(QUIT))
-                        continue
-                    self.transition()  # 次に遷移する
-                    # ユーザー名が既に登録されているならユーザー入力画面を飛ばす
-                    if self.state.name == States.USER and self.has_user_name:
-                        self.transition()
-                # 選択画面の矢印キー操作
-                elif self.state.name in self.has_choices_state:
-                    if event.key in self.selector.call_trigger.keys():
-                        self.selector.call_trigger[event.key]()
-                        self.is_running = False
+            elif (
+                event.type == KEYDOWN
+                and event.key == K_RETURN
+                or event.type == USEREVENT
+            ):
+                if self.state.name == States.TITLE and self.selector.position == 1:
+                    pygame.event.post(pygame.event.Event(QUIT))
+                    continue
+                self.transition()  # 次に遷移する
+            # 選択画面の矢印キー操作
+            elif event.type == KEYDOWN and self.state.name in self.has_choices_state:
+                if event.key in self.selector.call_trigger.keys():
+                    self.selector.call_trigger[event.key]()
+                    self.is_running = False
+
 
 class SelectorFocus:
     """

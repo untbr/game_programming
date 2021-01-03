@@ -97,9 +97,3 @@ class TestState:
         state.event()  # イベント処理
         assert state.state == state.states[0]  # TITLEに遷移
 
-        # 新たにエンターキーを押下し、ゲームタイプ選択画面に遷移させたい
-        # ユーザー名の登録は済んでいるので飛ばされる
-        pygame.event.post(pygame.event.Event(KEYDOWN, key=K_RETURN))
-        state.event()  # イベント処理
-        assert state.state == state.states[2]  # TYPEに遷移
-

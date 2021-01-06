@@ -46,12 +46,6 @@ class User:
 
     def add_score(self, score: Score) -> None:
         """スコアを__scoresに追加するメソッド"""
+        score.set_grade()  # 評価の算出
         self.__scores.append(score)
 
-    def share(self):
-        """ツイッターで最新のスコアをシェアするためのメソッド"""
-        if not self.scores:
-            return ""
-        data = {"text": format(self)}
-        url = "https://twitter.com/intent/tweet?" + urlencode(data)
-        webbrowser.open(url)  # 既定のブラウザで開く

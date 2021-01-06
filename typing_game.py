@@ -48,7 +48,6 @@ def main():
                         play.send(game_instance.judge_word(input_text))
                     except StopIteration:
                         pass
-                game_instance.score.set_grade()  # 評価の算出
                 user.add_score(game_instance.score)  # ユーザーにスコアを追加する
                 state.transition()  # ゲームプレイが終わると自動で結果画面に遷移させる
                 continue

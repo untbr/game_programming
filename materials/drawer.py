@@ -128,7 +128,6 @@ class StateDraw(Drawer):
 
     def title(self, focus_index) -> None:
         """タイトル画面"""
-        # print("a")
         pygame.display.set_caption("タイピングゲーム | Title")  # キャプション設定
         self.screen.fill(Color.WAKATAKE.rgb)  # ウィンドウを塗りつぶす
         # 画面に表示するテキストの設定
@@ -236,10 +235,9 @@ class StateDraw(Drawer):
         pygame.key.stop_text_input()
         return input_text
 
-    def result(self, user):
+    def result(self, result):
         """リザルト画面"""
         pygame.display.set_caption("タイピングゲーム | Result")  # キャプション設定
-        result = user.split("\n")
         self.screen.fill(Color.WAKATAKE.rgb)  # ウィンドウを塗りつぶす
         title = "リザルト"
         self.make_header(title)

@@ -129,10 +129,10 @@ class StateDraw(Drawer):
     def title(self, focus_index) -> None:
         """タイトル画面"""
         # print("a")
-        pygame.display.set_caption("タイピングゲーム(仮) | Title")  # キャプション設定
+        pygame.display.set_caption("タイピングゲーム | Title")  # キャプション設定
         self.screen.fill(Color.WAKATAKE.rgb)  # ウィンドウを塗りつぶす
         # 画面に表示するテキストの設定
-        title = "タイピングゲーム(仮)"
+        title = "タイピングゲーム"
         self.make_header(title)
         self.make_header_outline()
         subheader_list = ["開始", "終了"]
@@ -142,7 +142,7 @@ class StateDraw(Drawer):
 
     def register(self):
         """ユーザー名入力画面"""
-        pygame.display.set_caption("タイピングゲーム(仮) | User")  # キャプション設定
+        pygame.display.set_caption("タイピングゲーム | User")  # キャプション設定
         self.screen.fill(Color.WAKATAKE.rgb)  # ウィンドウを塗りつぶす
         title = "ユーザー名入力"
         self.make_header(title)
@@ -154,19 +154,19 @@ class StateDraw(Drawer):
 
     def choose_type(self, focus_index) -> None:
         """ゲーム選択画面"""
-        pygame.display.set_caption("タイピングゲーム(仮) | Type")  # キャプション設定
+        pygame.display.set_caption("タイピングゲーム | Type")  # キャプション設定
         self.screen.fill(Color.WAKATAKE.rgb)  # ウィンドウを塗りつぶす
         # 画面に表示するテキストの設定
         title = "ゲーム選択"
         self.make_header(title)
         self.make_header_outline()
-        subheader_list = ["レポートゲーム(仮)", "しりとりゲーム(仮)"]
+        subheader_list = ["ボキャブラリーゲーム", "しりとりゲーム"]
         self.make_subheader(subheader_list, 0, focus_index)
         pygame.display.update()  # 画面更新
 
     def choose_mode(self, game_modes_list, focus_index) -> None:
         """モード選択画面"""
-        pygame.display.set_caption("タイピングゲーム(仮) | Mode")  # キャプション設定
+        pygame.display.set_caption("タイピングゲーム | Mode")  # キャプション設定
         self.screen.fill(Color.WAKATAKE.rgb)  # ウィンドウを塗りつぶす
         title = "モード選択"
         self.make_header(title)
@@ -180,7 +180,7 @@ class StateDraw(Drawer):
         しりとりの場合に出題する頭文字の取得に時間がかかるので、
         先に描画できるものは描画して、あとから出題する
         """
-        pygame.display.set_caption("タイピングゲーム(仮) | Play")  # キャプション設定
+        pygame.display.set_caption("タイピングゲーム | Play")  # キャプション設定
         self.screen.fill(Color.WAKATAKE.rgb)  # ウィンドウを塗りつぶす
         # 画面に表示するテキストの設定
         self.make_top_left_subheader(mode_info)
@@ -238,7 +238,7 @@ class StateDraw(Drawer):
 
     def result(self, user):
         """リザルト画面"""
-        pygame.display.set_caption("タイピングゲーム(仮) | Result")  # キャプション設定
+        pygame.display.set_caption("タイピングゲーム | Result")  # キャプション設定
         result = user.split("\n")
         self.screen.fill(Color.WAKATAKE.rgb)  # ウィンドウを塗りつぶす
         title = "リザルト"

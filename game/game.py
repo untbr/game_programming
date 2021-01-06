@@ -17,7 +17,7 @@ class Mode(NamedTuple):
 
 
 class ReportType(Enum):
-    """レポートゲームの難易度の列挙体"""
+    """ボキャブラリーゲームの難易度の列挙体"""
 
     EASY = Mode(0, "かんたん", 3)
     NORMAL = Mode(1, "ふつう", 5)
@@ -124,7 +124,7 @@ class JudgeResponse(NamedTuple):
     """
 
     correct: bool  # 正誤判定結果
-    message: str  # レポートゲームであれば正しい答え、しりとりならサーバ側からの判定メッセージ
+    message: str  # ボキャブラリーゲームであれば正しい答え、しりとりならサーバ側からの判定メッセージ
 
 
 class QuestionResponse(NamedTuple):
@@ -139,7 +139,7 @@ class QuestionResponse(NamedTuple):
 class AGame(metaclass=ABCMeta):
     """
     ゲームロジックの抽象クラス
-    レポートゲームとしりとりゲームに継承させる
+    ボキャブラリーゲームとしりとりゲームに継承させる
 
     利用側は
     ReportもしくはShiritoriのインスタンス化し、set_modeで難易度(品詞)をセット
@@ -254,11 +254,11 @@ class Report(AGame):
         self.file_path = os.path.dirname(__file__) + "/words.csv"
 
     def __str__(self):
-        return "レポートゲームゲーム: " + self.game_info.mode.value
+        return "ボキャブラリーゲームゲーム: " + self.game_info.mode.value
 
     def set_mode(self, game_mode: Mode) -> None:
         """
-        レポートゲームの難易度を設定する具象メソッド
+        ボキャブラリーゲームの難易度を設定する具象メソッド
         モードをセットすれば解くべき問題数がわかるので、
         それを使ってファイルから問題数分の単語を拾ってself.wordsに格納する
         """

@@ -1,4 +1,3 @@
-import webbrowser
 from typing import List
 from urllib.parse import urlencode
 
@@ -9,8 +8,6 @@ class User:
     """
     プレイするユーザの情報に関するクラス
     Scoreクラスを__scoresリストに持ち、ゲームクリア時にクリアの情報を追加する(add_score())
-    Userは一回だけインスタンス化され、
-    ゲーム起動中は同じUserインスタンスにスコアを追加していく
     """
 
     def __init__(self):

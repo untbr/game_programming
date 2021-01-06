@@ -3,11 +3,11 @@ import textwrap
 from time import sleep
 
 import pygame
-from pygame.locals import *  # 定数読み込み
+from pygame.locals import *
 
 from .align import Align  # オブジェクトの配置に関するモジュール
 from .colors import Color  # 色に関するモジュール
-from .text import Text
+from .text import Text # テキストに関するモジュール
 
 
 class Drawer:
@@ -118,13 +118,12 @@ class Drawer:
 
 class StateDraw(Drawer):
     """
-    各画面を状態として捉えて処理を行うクラス
-    インスタンス作成後、title→mode→...とメソッドを順次呼び出していく
+    状態に応じた画面を描画をするためのクラス
     """
 
     def __init__(self) -> None:
         super().__init__()
-        pygame.key.stop_text_input()  # input, editingを止める
+        pygame.key.stop_text_input()  # input, editingイベントを止める
 
     def title(self, focus_index) -> None:
         """タイトル画面"""
@@ -136,7 +135,6 @@ class StateDraw(Drawer):
         self.make_header_outline()
         subheader_list = ["開始", "終了"]
         self.make_subheader(subheader_list, 0, focus_index)
-        # Presents for: untbr(グループ1)
         pygame.display.update()  # 画面更新
 
     def register(self):
@@ -230,9 +228,9 @@ class StateDraw(Drawer):
             elif event.type == TEXTINPUT:  # 半角入力するときに必ず使う(もしくは全角時enter)
                 input_text = text.input(event.text)
             if event.type in [KEYDOWN, TEXTEDITING, TEXTINPUT]:
-                self.text_box(input_text)
+                self.text_box(input_text) # 入力を描画
                 pygame.display.update()
-        pygame.key.stop_text_input()
+        pygame.key.stop_text_input() # input, editingイベントをキャッチしないようにする
         return input_text
 
     def result(self, result):

@@ -241,7 +241,7 @@ class Report(AGame):
         self.file_path = os.path.dirname(__file__) + "/words.csv"
 
     def __str__(self):
-        return "ボキャブラリーゲームゲーム: " + self.score.mode.value
+        return "ボキャブラリーゲーム: " + self.score.mode.value
 
     def set_mode(self, game_mode: Mode) -> None:
         """

@@ -32,16 +32,23 @@ class ShiritoriType(Enum):
     ADJECTIVE = Mode(2, "形容詞", 3)
 
 
-class GameInfo:
-    """ゲームの情報に関するクラス"""
+class Score:
+    """
+    ゲームクリア時のスコアに関するクラス
+    """
 
-    def __init__(self, game_type: Union[Type[ReportType], Type[ShiritoriType]]) -> None:
-        self.__type = game_type
+    def __init__(self, game_type: Union[Type[ReportType], Type[ShiritoriType]]):
+       
+        self.__game_type = game_type
+        self.__mode = None
+        self.__number_of_corrects = 0  # 正解した問題数
+        self.__number_of_incorrects = 0  # 不正解だった問題数
+        self.__grade = "-"  # 5段階評価の成績(S, A, B, C, D)
 
     @property
     def type(self) -> Union[Type[ReportType], Type[ShiritoriType]]:
         """ReportTypeもしくはShiritoriTypeを返すプロパティ"""
-        return self.__type
+        return self.__game_type
 
     @property
     def mode(self) -> Mode:
@@ -52,23 +59,6 @@ class GameInfo:
     def mode(self, mode: Mode) -> None:
         """Modeのsetter"""
         self.__mode = mode
-
-
-class Score:
-    """
-    ゲームクリア時のスコアに関するクラス
-    """
-
-    def __init__(self, game_info: GameInfo):
-        self.__game_info = game_info
-        self.__number_of_corrects = 0  # 正解した問題数
-        self.__number_of_incorrects = 0  # 不正解だった問題数
-        self.__grade = "-"  # 5段階評価の成績(S, A, B, C, D)
-
-    @property
-    def game_info(self) -> GameInfo:
-        """GameInfoを返すプロパティ"""
-        return self.__game_info
 
     @property
     def number_of_corrects(self) -> int:
@@ -108,7 +98,7 @@ class Score:
         """
         # 不正解数とそのモードの解くべき問題数の差
         diff_between_incorrects_and_words = (
-            self.number_of_incorrects - self.__game_info.mode.number_of_words
+            self.number_of_incorrects - self.mode.number_of_words
         )
         # 差分と成績の辞書
         dict_n = {"S": 0, "A": 3, "B": 6, "C": 9, "D": 12}
@@ -148,10 +138,7 @@ class AGame(metaclass=ABCMeta):
     """
 
     def __init__(self, game_type: Union[Type[ReportType], Type[ShiritoriType]]):
-        # 継承先のインスタンスが生成されれば、ゲームのタイプが決まるので、
-        # 先にGameInfoに対してゲームのタイプのみでインスタンス化
-        self.game_info = GameInfo(game_type)  # GameInfoクラスのインスタンス化
-        self.score = Score(self.game_info)  # Scoreクラスのインスタンス化
+        self.score = Score(game_type)  # Scoreクラスのインスタンス化
 
     @abstractmethod
     def set_mode(self, game_mode: Mode) -> None:
@@ -176,19 +163,19 @@ class AGame(metaclass=ABCMeta):
         """
         セットされたゲームのタイプのModeを返すメソッド
         """
-        return [i.value for i in self.game_info.type]
+        return [i.value for i in self.score.type]
 
     @property
     def is_finish(self) -> bool:
         """
         self.number_of_correctが、そのモードの解くべき問題数に達するとTrueを返しそれ以外でFalseを返すメソッド
         """
-        return self.game_info.mode.number_of_words == self.score.number_of_corrects
+        return self.score.mode.number_of_words == self.score.number_of_corrects
 
     @property
     def progress(self) -> str:
         return "{}/{}".format(
-            self.score.number_of_corrects, self.game_info.mode.number_of_words
+            self.score.number_of_corrects, self.score.mode.number_of_words
         )
 
 
@@ -199,11 +186,11 @@ class Shiritori(AGame):
         self.head_word = ""  # 頭文字に使う変数
 
     def __str__(self):
-        return "しりとりゲーム: " + self.game_info.mode.value
+        return "しりとりゲーム: " + self.score.mode.value
 
     def set_mode(self, game_mode: Mode) -> None:
         """しりとりゲームの品詞を設定する具象メソッド"""
-        self.game_info.mode = game_mode
+        self.score.mode = game_mode
         self.client.set_mode(game_mode.id)
 
     def get_word(self) -> QuestionResponse:
@@ -215,7 +202,7 @@ class Shiritori(AGame):
             self.head_word = head["next_head"]
         # 上でhead_wordがNoneでないことが保証される
         description = "「{}」で始まる{}を入力してください".format(
-            self.head_word, self.game_info.mode.value
+            self.head_word, self.score.mode.value
         )
         # QuestionResponseを頭文字とdescriptionでタプルを生成して返す
         return QuestionResponse(self.head_word, description)
@@ -254,7 +241,7 @@ class Report(AGame):
         self.file_path = os.path.dirname(__file__) + "/words.csv"
 
     def __str__(self):
-        return "ボキャブラリーゲームゲーム: " + self.game_info.mode.value
+        return "ボキャブラリーゲームゲーム: " + self.score.mode.value
 
     def set_mode(self, game_mode: Mode) -> None:
         """
@@ -262,7 +249,7 @@ class Report(AGame):
         モードをセットすれば解くべき問題数がわかるので、
         それを使ってファイルから問題数分の単語を拾ってself.wordsに格納する
         """
-        self.game_info.mode = game_mode
+        self.score.mode = game_mode
         self.add_words(game_mode.number_of_words)  # self.wordsに単語追加するメソッドを呼ぶ
 
     def add_words(self, number_of_words: int) -> None:
